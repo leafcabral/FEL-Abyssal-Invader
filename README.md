@@ -14,7 +14,7 @@ Esse projeto foi feito pelo grupo 1 do *Projeto Game* da disciplina Programaçã
 Os integrantes são:
 - [Ian Caliel Matos Cabral](https://github.com/calielian)
 - Fernando Ferrari Barcelos
-- [Gabriel Carlos Muniz Vago](https://github.com/Orionsz642)
+- Enzo Dal Col de Almeida
 - Luigi Ridolf Del Piero
 - [Rafael Cabral Lopes](https://github.com/leafcabral)
 - [Vitor Felberg Barcelos](https://github.com/vtkaxx)
