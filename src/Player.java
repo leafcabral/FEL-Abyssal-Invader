@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage; // Importa para trabalhar com imagens.
 
 
 public class Player extends GameObject {
-	private int life;
+	public int life;
 	private float iFrameSeconds = 0;
 
 	public Player(Vec2D pos, Vec2D size,
@@ -21,18 +21,6 @@ public class Player extends GameObject {
 			iFrameSeconds -= delta;
 		};
 	};
-	
-	@Override
-	public void draw(Graphics2D g2) {
-		BufferedImage spriteTemp = super.getSprite();
-		
-		if (spriteTemp == null) {
-			super.draw_fallback(g2);
-			return;
-		}
-		
-		g2.drawImage(spriteTemp, pos.x, pos.y, size.x, size.y, null);
-	}
 	
 	public void makeIvencible(float seconds) {
 		iFrameSeconds = seconds;

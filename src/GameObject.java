@@ -6,7 +6,7 @@ public abstract class GameObject {
 	public Vec2D pos;
 	public Vec2D size;
 	public Vec2D direction;
-	public int speed;
+	public float speed;
 	
 	private BufferedImage sprite;
 	private Color fallback_color;
@@ -26,16 +26,32 @@ public abstract class GameObject {
 	
 	
 	public abstract void update(float delta);
-	public abstract void draw(Graphics2D g2);
 	
 	
 	public BufferedImage getSprite() {
 		return sprite;
 	}
 	
+	public void draw(Graphics2D g2) {
+		if (sprite == null) {
+			draw_fallback(g2);
+			return;
+		}
+		
+		g2.drawImage(
+			sprite,
+			(int) pos.x, (int) pos.y,
+			(int) size.x, (int) size.y,
+			null
+		);
+	}
+	
 	public void draw_fallback(Graphics2D g2) {
 		g2.setColor(fallback_color);
-		g2.fillRect(pos.x, pos.y, size.x, size.y);
+		g2.fillRect(
+			(int) pos.x, (int) pos.y,
+			(int) size.x, (int) size.y
+		);
 	}
 	
 	public Vec2D getCenter() {
@@ -48,5 +64,9 @@ public abstract class GameObject {
 	
 	public Vec2D getVelocity() {
 		return direction.normalize().multiply(speed);
-	}	
+	}
+	
+	public void move(float delta) {
+		pos.addIp(getVelocity().multiply(delta));
+	}
 }
