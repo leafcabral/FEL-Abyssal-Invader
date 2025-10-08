@@ -13,8 +13,8 @@ public abstract class GameObject {
 	
 	
 	public GameObject(Vec2D pos, Vec2D size,
-		          Vec2D direction, int speed,
-			  BufferedImage sprite, Color fallback_color) {
+	                  Vec2D direction, int speed,
+	                  BufferedImage sprite, Color fallback_color) {
 		this.pos = new Vec2D(pos);
 		this.size = new Vec2D(size);
 		this.direction = new Vec2D(direction);
@@ -25,9 +25,13 @@ public abstract class GameObject {
 	}
 	
 	
-	public abstract void update(double delta);
+	public abstract void update(float delta);
 	public abstract void draw(Graphics2D g2);
 	
+	
+	public BufferedImage getSprite() {
+		return sprite;
+	}
 	
 	public void draw_fallback(Graphics2D g2) {
 		g2.setColor(fallback_color);
