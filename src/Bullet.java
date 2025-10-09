@@ -13,4 +13,12 @@ public class Bullet extends GameObject{
 		super.move(delta);
 		
 	}
+	
+	public static Bullet newDefaultBullet(Vec2D pos) {
+		return new Bullet(
+			pos, new Vec2D(10, 10),
+			new Vec2D(0, 1), 7,
+			ImageManager.getImage("bullet"), Color.YELLOW
+		);
+	}
 }

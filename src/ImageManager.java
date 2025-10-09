@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class ImageManager {
 	public String dir = "res/images/";
-	private HashMap<String, BufferedImage> images = new HashMap<>();
+	private static HashMap<String, BufferedImage> images = new HashMap<>();
 	
 	public ImageManager() {
 		// Player
@@ -37,7 +37,7 @@ public class ImageManager {
 		}
 	}
 
-	public BufferedImage getImage(String key) {
+	public static BufferedImage getImage(String key) {
 		return images.get(key);
 	}
 }

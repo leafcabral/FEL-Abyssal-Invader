@@ -16,18 +16,28 @@ import java.io.IOException;
 import javax.imageio.ImageIO; // Importa para carregar imagens.
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
+	private final Vec2D size = new Vec2D(800, 600);
+	private float delta = 0;
 
+	private Thread gameThread;
+	private Random random;
+	
+	private ArrayList<GameObject> gameObjects;
+	private ImageManager imageManager;
+	private SoundManager soundManager;
+	//private InputManager inputManager;
+	
+	
+	
+	
 	private final int screenWidth = 800;
 	private final int screenHeight = 600;
 	private final int fps = 60;
 	
-	private Thread gameThread;
 	private Player player;
 	private ArrayList<Bullet> bullets;
 	public ArrayList<Enemy> enemies;
 	// private ArrayList<Pair<int,int>> explosion;;
-	private SoundManager soundManager;
-	private Random random;
 
 	private int score;
 	private boolean gameOver, paused;
