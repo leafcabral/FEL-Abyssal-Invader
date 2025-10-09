@@ -16,8 +16,21 @@ import java.io.IOException;
 import javax.imageio.ImageIO; // Importa para carregar imagens.
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
-	private final Vec2D size = new Vec2D(800, 600);
+	public enum GameStatus {
+		LOADING,
+		MAIN_MENU,
+		GAME_OVER,
+		PAUSED,
+		RUNNING
+	}
+	
+	private final int screenWidth = 800;
+	private final int screenHeight = 600;
+	private BufferedImage background;
+	
 	private float delta = 0;
+	private int score = 0;
+	private GameStatus status = GameStatus.LOADING;
 
 	private Thread gameThread;
 	private Random random;
@@ -25,55 +38,25 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private ArrayList<GameObject> gameObjects;
 	private ImageManager imageManager;
 	private SoundManager soundManager;
-	//private InputManager inputManager;
+	private InputManager inputManager;
 	
-	
-	
-	
-	private final int screenWidth = 800;
-	private final int screenHeight = 600;
-	private final int fps = 60;
-	
-	private Player player;
-	private ArrayList<Bullet> bullets;
-	public ArrayList<Enemy> enemies;
-	// private ArrayList<Pair<int,int>> explosion;;
-
-	private int score;
-	private boolean gameOver, paused;
-
-	private boolean isLeftPressed, isRightPressed, isUpPressed, isDownPressed;
-	private boolean isShooting;
-	private long lastShotTime;
-	private final long shootDelay = 200;
-
-	// Adiciona a variável para a imagem de fundo.
-	private BufferedImage backgroundImage;
 
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
-		this.setBackground(Color.BLACK); // O background inicial pode ser preto, mas será coberto pela imagem.
+		this.setBackground(Color.BLACK);
 		this.setDoubleBuffered(true);
 		this.setFocusable(true);
 		this.addKeyListener(this);
 
-		this.player = new Player(screenWidth / 2 - 25, screenHeight - 100, 50, 50, 5);
-		this.bullets = new ArrayList<>();
-		this.enemies = new ArrayList<>();
+		this.gameObjects.add(new Player(new Vec2D(
+			screenWidth / 2, screenHeight - 100)
+		));
 		this.soundManager = new SoundManager();
+		this.imageManager = new ImageManager();
+		this.inputManager = new InputManager();
 		this.random = new Random();
-
-		this.score = 0;
-		this.gameOver = false;
-
-		// Tenta carregar a imagem de fundo.
-		try {
-			this.backgroundImage = ImageIO.read(new File("res/background.jpg"));
-		} catch (IOException e) {
-			System.err.println("Erro ao carregar a imagem de fundo: res/background.jpg");
-			e.printStackTrace();
-			// Se a imagem não carregar, 'backgroundImage' será null e o fundo ficará preto.
-		}
+		
+		this.background = ImageManager.getImage("background1");
 	}
 
 	public void startGameThread() {
@@ -193,8 +176,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		Graphics2D g2 = (Graphics2D) g;
 
 	   // Desenhar fundo
-		if (backgroundImage != null) {
-			g2.drawImage(backgroundImage, 0, 0, screenWidth, screenHeight, null);
+		if (background != null) {
+			g2.drawImage(background, 0, 0, screenWidth, screenHeight, null);
 		} else {
 			// Se a imagem de fundo não carregar, preenche com preto.
 			g2.setColor(Color.BLACK);
