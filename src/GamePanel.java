@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.awt.Font;
 import java.awt.image.BufferedImage; // Importa para trabalhar com imagens.
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import java.time.Instant;
 import java.time.Duration;
@@ -24,8 +25,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	}
 	
 	private final int screenWidth = 800;
-	private final int screenHeight = 600;
-	private BufferedImage background;
+	private final int screenHeight = 800;
+	private final BufferedImage background;
 	
 	private GameStatus status;
 	private Instant lastFrameTime;
@@ -33,16 +34,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private int score = 0;
 
 	private Thread gameThread;
-	private Random random;
-	private float fps = 60;
+	private final Random random;
 	
-	private Player player;
-	private ArrayList<Enemy> enemies;
-	private ArrayList<Bullet> bullets;
+	private final Player player;
+	private final CopyOnWriteArrayList<Enemy> enemies;
+	private final CopyOnWriteArrayList<Bullet> bullets;
 	
-	private ImageManager imageManager;
-	private SoundManager soundManager;
-	private InputManager inputManager;
+	private final ImageManager imageManager;
+	private final SoundManager soundManager;
+	private final InputManager inputManager;
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -51,7 +51,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.setFocusable(true);
 		this.addKeyListener(this);
 
+		this.soundManager = new SoundManager();
+		this.imageManager = new ImageManager();
+		this.inputManager = new InputManager();
+		
 		this.background = ImageManager.getImage("background1");
+		this.random = new Random();
 		
 		this.status = GameStatus.MAIN_MENU;
 		this.lastFrameTime = Instant.now();
@@ -59,14 +64,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.player = new Player(new Vec2D(
 			screenWidth / 2, screenHeight - 100
 		));
-		this.enemies = new ArrayList<>();
-		this.bullets = new ArrayList<>();
-		
-		this.soundManager = new SoundManager();
-		this.imageManager = new ImageManager();
-		this.inputManager = new InputManager();
-		this.random = new Random();
-		
+		this.player.pos.x -= this.player.size.x/2;
+		this.enemies = new CopyOnWriteArrayList<>();
+		this.bullets = new CopyOnWriteArrayList<>();
 	}
 
 	public void startGameThread() {
@@ -79,38 +79,27 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		Duration diff = Duration.between(lastFrameTime, current);
 		this.lastFrameTime = current;
 
-		this.delta = diff.toSeconds();
+		this.delta = diff.toNanos() / 1e9f;
 	}
 	
 	@Override
 	public void run() {
-		double drawInterval = 1000000000.0 / fps;
-		double nextDrawTime = System.nanoTime() + drawInterval;
-
+		this.status = GameStatus.RUNNING;
+		
 		while (gameThread != null) {
 			updateDelta();
 			update();
 			repaint();
-
-			try {
-				double remainingTime = nextDrawTime - System.nanoTime();
-				remainingTime /= 1000000;
-				if (remainingTime < 0) remainingTime = 0;
-				Thread.sleep((long) remainingTime);
-				nextDrawTime += drawInterval;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 
 	private void handlePlayerInput() {
 		float playerVelocity = player.speed * delta;
 		
-		if (inputManager.isActionPressed("left")) {
+		if (inputManager.isActionPressed("moveLeft")) {
 			player.pos.x -= playerVelocity;
 		}
-		if (inputManager.isActionPressed("right")) {
+		if (inputManager.isActionPressed("moveRight")) {
 			player.pos.x += playerVelocity;
 		}
 		// Se fora, coloca pra dentro
@@ -135,23 +124,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 
 		handlePlayerInput();
+		player.update(delta);
 
-		Iterator<Bullet> bulletIterator = bullets.iterator();
-		while (bulletIterator.hasNext()) {
-			Bullet b = bulletIterator.next();
-			b.update(delta);
-			if (b.pos.y < 0) {
-				bulletIterator.remove();
-			}
-		}
-		Iterator<Enemy> enemyIterator = enemies.iterator();
-		while (enemyIterator.hasNext()) {
-			Enemy e = enemyIterator.next();
-			e.update(delta);
-			if (e.pos.y > screenHeight) {
-				enemyIterator.remove();
-			}
-		}
+		bullets.removeIf(bullet -> {
+			bullet.update(delta);
+			return bullet.pos.y < 0; 
+		});
+		enemies.removeIf(enemy -> {
+			enemy.update(delta);
+			return enemy.pos.y > screenHeight;
+		});
 		
 		if (random.nextInt(100) < 2) {
 			Vec2D pos = new Vec2D(
@@ -294,7 +276,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		inputManager.keyPressed(e.getKeyCode());
-
+		
 		// Só deve checar quando clicar, e não todo frame
 		if (inputManager.isActionPressed("menu")) {
 			if (status == GameStatus.RUNNING) {

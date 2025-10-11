@@ -8,7 +8,7 @@ public class SoundManager {
 
 	public void playSound(String filePath) {
 		try {
-			File soundFile = new File("res/" + filePath); 
+			File soundFile = new File("res/sounds/" + filePath); 
 			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
 			Clip clip = AudioSystem.getClip();
 			clip.open(audioIn);

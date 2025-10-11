@@ -35,15 +35,15 @@ public abstract class GameObject {
 	public void draw(Graphics2D g2) {
 		if (sprite == null) {
 			draw_fallback(g2);
-			return;
+		} else {
+			g2.drawImage(
+				sprite,
+				(int) pos.x, (int) pos.y,
+				(int) size.x, (int) size.y,
+				null
+			);
 		}
 		
-		g2.drawImage(
-			sprite,
-			(int) pos.x, (int) pos.y,
-			(int) size.x, (int) size.y,
-			null
-		);
 	}
 	
 	public void draw_fallback(Graphics2D g2) {

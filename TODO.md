@@ -35,5 +35,5 @@
 - [ ] Criar funções de `update()`/`process()` para cada entidade
 - [ ] Criar funções de `draw()`/`render()` para cada entidade
 - [ ] Criar funções para simplificar o código e evitar repetição
-- [ ] Colocar *resources* em pastas apropriadas
-- [ ] Criar função para desenhar um menu que pausa o jogo
+- [X] Colocar *resources* em pastas apropriadas
+- [ ] Criar função para desenhar um menu (pause, gameover e talvez main menu)

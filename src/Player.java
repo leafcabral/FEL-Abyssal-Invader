@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage; // Importa para trabalhar com imagens.
 public class Player extends GameObject {
 	public int life;
 	private float iFrameSeconds = 0;
-	private final float shootDelay = 300;
+	private final float shootDelay = 0.5f;
 	private float shootTimer = 0;
 
 	public Player(Vec2D pos, Vec2D size,
@@ -17,8 +17,8 @@ public class Player extends GameObject {
 	}
 	public Player(Vec2D pos) {
 		this(
-			pos, new Vec2D(50,50),
-			new Vec2D(0, 1), 5,
+			pos, new Vec2D(75, 75),
+			new Vec2D(0, -1), 700, 
 			ImageManager.getImage("player"), Color.GREEN,
 			5
 		);
