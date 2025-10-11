@@ -1,39 +1,34 @@
-# O que fazer
+# O que será adicionado
 
-## Jogabilidade
-- [ ] Remover movimentação 2D
-- [ ] Adicionar sistema de *waves*
-- [ ] Fazer cada inimigo ter seu especial
-	- [ ] 1: Rápido
-	- [ ] 2: Atira
-	- [ ] 3: Explode
-	- [ ] 4: Divide em dois
-- [ ] Adicionar chefão após *wave* final
+Quando menor o nível, maior a prioridade.
+
+## Essencial para fazer o resto
+- [ ] Juntar ImageManager e SoundManager em ResourceManager
+- [ ] Fazer inimigos voltarem a spawnar
+- [ ] Consertar handleCollision()
 - [ ] Adicionar sistema de vidas
-- [ ] Adicionar novas tipos de munição (limitadas)
-	- [ ] Tiro que se espalha (shotgun)
-	- [ ] Tiro concentrado grande (blast)
-- [ ] Adicionar sistema de pontuação
-- [ ] Clique duplo para girar e mover rápido
-- [ ] Jogador resgata tesouro do planeta após derrotar chefe
 
-## Gráficos
+## Extremamente importante para o jogo
+- [ ] Adicionar sistema de *waves*, por tempo
+- [ ] Adicionar menu de pause e game over
+- [ ] Jogador vira um pouco quando se movimenta
 - [ ] Inimigos pararem de spawnar dentro do outro
-- [ ] Sprite com mesmo *pixel-size*
-- [ ] Adicionar *geração procedural* para o fundo
-	- [ ] Estrelas em locais aleatórios
-	- [ ] Nebula verde
-	- [ ] Fazer nebula se mover
-	- [ ] Fazer nebula mais densa em cada *wave*
+- [ ] Melhorar HUD (vidas, armas, controles)
+
+## Se não ter vai ser ruim
+- [ ] Fundo que se move
+- [ ] Sprites com mesmo *pixel-size*
 - [ ] Adicionar efeitos de explosão quando inimigos morrem
 - [ ] Adicionar menu inicial
-- [ ] Adicionar menu de pause
-- [ ] Adicionar menu de game over
-- [ ] Melhorar gráfico padrão no caso de fallback
 
-## Código e Arquivos
-- [ ] Criar funções de `update()`/`process()` para cada entidade
-- [ ] Criar funções de `draw()`/`render()` para cada entidade
-- [ ] Criar funções para simplificar o código e evitar repetição
-- [X] Colocar *resources* em pastas apropriadas
-- [ ] Criar função para desenhar um menu (pause, gameover e talvez main menu)
+## Só se sobrar tmepo
+- [ ] Inimigos com especiais(rápido, atira, explode, divide em dois)
+- [ ] Adicionar novas tipos de munição (shotgun e blast)
+- [ ] Fundo do planeta após *wave* final
+- [ ] Adicionar chefão após *wave* final
+- [ ] Jogador resgata tesouro do planeta após derrotar chefe
+
+## Não precisa
+- [ ] Nebula de fundo ficar mais densa a cada wave
+- [ ] Clique duplo para girar e mover rápido
+- [ ] Melhorar gráfico padrão no caso de fallback

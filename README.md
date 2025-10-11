@@ -6,6 +6,8 @@ Recriação do jogo Space Invader, com novos recursos e estilo de GameBoy, em Ja
 Trabalho apresentado à disciplina de Programação Orientada a Objetos II do Curso de Informática para Internet do IFES campus Serra, como requisito parcial para a avaliação
 Orientador: Prof. Fernando Wencelewski Possenti
 
+---
+
 ## Sobre o Projeto
 Esse projeto busca recriar o jogo Space Invaders, adicionando diversos elementos na gameplay. Os gráficos do jogo são inspirados no GameBoy original.
 
@@ -19,6 +21,15 @@ Os integrantes são:
 - [Rafael Cabral Lopes](https://github.com/leafcabral)
 - [Vitor Felberg Barcelos](https://github.com/vtkaxx)
 
+---
+
+## Requisitos
+### Instalação
+- **Java Development Kit X.Y** ou superior
+- **Apache Ant X.Y** ou superior
+### Execução
+- **Java Runtime Environment X.Y** ou superior
+
 ## Como instalar
 Baixe os arquivos desse repositório em formato `.zip` e extrai-os em uma pasta ou, alternativamente, baixe o último release, caso tenha (arquivo `.jar`).
 
@@ -30,6 +41,8 @@ cd FEL-SpaceInvader
 ant
 java -jar "FEL-SpaceInvader.jar" 
 ```
+
+---
 
 ## Licença
 Este projeto está sob a Licença Pública Geral GNU (v3.0).
