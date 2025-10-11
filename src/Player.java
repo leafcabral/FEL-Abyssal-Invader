@@ -41,7 +41,7 @@ public class Player extends GameObject {
 	public Bullet shoot() {
 		if (shootTimer <= 0) {
 			shootTimer = shootDelay;
-			return Bullet.newDefaultBullet(pos);
+			return Bullet.newDefaultBullet(pos.add(new Vec2D(0,5)));
 		}
 		return null;
 	}

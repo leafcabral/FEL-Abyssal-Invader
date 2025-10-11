@@ -10,7 +10,7 @@ public class InputManager {
 	private HashMap<String, Set<Integer>> keyBindings = new HashMap<>();
 	
 	public InputManager() {
-		// Basic Moves
+		// Jogador
 		keyBindings.put("moveLeft", Set.of(
 			KeyEvent.VK_A, KeyEvent.VK_LEFT
 		));
@@ -19,15 +19,15 @@ public class InputManager {
 		));
 		keyBindings.put("shoot", Set.of(KeyEvent.VK_SPACE));
 		
-		// Change Weapon
+		// Mudar armas
 		keyBindings.put("weapon1", Set.of(
-			KeyEvent.VK_1, KeyEvent.VK_P
+			KeyEvent.VK_Z, KeyEvent.VK_P
 		));
 		keyBindings.put("weapon2", Set.of(
-			KeyEvent.VK_2, KeyEvent.VK_O
+			KeyEvent.VK_X, KeyEvent.VK_O
 		));
 		keyBindings.put("weapon3", Set.of(
-			KeyEvent.VK_3, KeyEvent.VK_I
+			KeyEvent.VK_C, KeyEvent.VK_I
 		));
 		
 		// Menu
@@ -41,9 +41,10 @@ public class InputManager {
 			KeyEvent.VK_S, KeyEvent.VK_DOWN
 		));
 		
-		// Other controls
+		// Outros controles
 		keyBindings.put("quit", Set.of(KeyEvent.VK_Q));
 		keyBindings.put("restart", Set.of(KeyEvent.VK_R));
+		
 		
 		for (Set<Integer> keys : keyBindings.values()) {
 			for (int key : keys) {

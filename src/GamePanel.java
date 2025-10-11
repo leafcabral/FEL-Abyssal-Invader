@@ -11,13 +11,12 @@ import java.util.Iterator;
 import java.util.Random;
 import java.awt.Font;
 import java.awt.image.BufferedImage; // Importa para trabalhar com imagens.
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO; // Importa para carregar imagens.
+
+import java.time.Instant;
+import java.time.Duration;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public enum GameStatus {
-		LOADING,
 		MAIN_MENU,
 		GAME_OVER,
 		PAUSED,
@@ -28,9 +27,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private final int screenHeight = 600;
 	private BufferedImage background;
 	
+	private GameStatus status;
+	private Instant lastFrameTime;
 	private float delta = 0;
 	private int score = 0;
-	private GameStatus status = GameStatus.LOADING;
 
 	private Thread gameThread;
 	private Random random;
@@ -51,6 +51,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.setFocusable(true);
 		this.addKeyListener(this);
 
+		this.background = ImageManager.getImage("background1");
+		
+		this.status = GameStatus.MAIN_MENU;
+		this.lastFrameTime = Instant.now();
+		
 		this.player = new Player(new Vec2D(
 			screenWidth / 2, screenHeight - 100
 		));
@@ -62,7 +67,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.inputManager = new InputManager();
 		this.random = new Random();
 		
-		this.background = ImageManager.getImage("background1");
 	}
 
 	public void startGameThread() {
@@ -70,12 +74,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		gameThread.start();
 	}
 
+	private void updateDelta() {
+		Instant current = Instant.now();
+		Duration diff = Duration.between(lastFrameTime, current);
+		this.lastFrameTime = current;
+
+		this.delta = diff.toSeconds();
+	}
+	
 	@Override
 	public void run() {
 		double drawInterval = 1000000000.0 / fps;
 		double nextDrawTime = System.nanoTime() + drawInterval;
 
 		while (gameThread != null) {
+			updateDelta();
 			update();
 			repaint();
 
@@ -91,67 +104,94 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 	}
 
+	private void handlePlayerInput() {
+		float playerVelocity = player.speed * delta;
+		
+		if (inputManager.isActionPressed("left")) {
+			player.pos.x -= playerVelocity;
+		}
+		if (inputManager.isActionPressed("right")) {
+			player.pos.x += playerVelocity;
+		}
+		// Se fora, coloca pra dentro
+		player.pos.x = Math.max(0, Math.min(
+			player.pos.x, screenWidth - player.size.x)
+		);
+		
+		if (inputManager.isActionPressed("shoot")) {
+			Bullet bullet = player.shoot();
+			if (bullet != null) {
+				bullets.add(bullet);
+				soundManager.playSound("shot.wav");
+			}
+		}
+		
+		// TODO: Adicionar mudança de armas
+	}
+	
 	public void update() {
 		if (status != GameStatus.RUNNING) {
 			return;
 		}
 
-		if (inputManager.isActionPressed("left")) {
-			player.pos.x -= player.speed;
-		}
-		if (inputManager.isActionPressed("right")) {
-			player.pos.x += player.speed;
-		}
-
-		if (player.pos.x < 0) player.x = 0;
-		if (player.pos.x > screenWidth - player.size.x) player.x = screenWidth - player.size.x;
-		if (player.pos.y < 0) player.y = 0;
-		if (player.pos.y > screenHeight - player.size.y) player.y = screenHeight - player.size.y;
-		
-		long currentTime = System.currentTimeMillis();
-		if (isShooting && currentTime - lastShotTime > shootDelay) {
-			bullets.add(new Bullet(player.x + player.width / 2 - 5, player.y, 10, 10, 7));
-			soundManager.playSound("shot.wav");
-			lastShotTime = currentTime;
-		}
+		handlePlayerInput();
 
 		Iterator<Bullet> bulletIterator = bullets.iterator();
 		while (bulletIterator.hasNext()) {
 			Bullet b = bulletIterator.next();
-			b.update();
-			if (b.y < 0) {
+			b.update(delta);
+			if (b.pos.y < 0) {
 				bulletIterator.remove();
 			}
 		}
-
-		if (random.nextInt(100) < 2) { 
-			enemies.add(new Enemy(random.nextInt(screenWidth - 50), -50, 50, 50, 3));
-		}
-
 		Iterator<Enemy> enemyIterator = enemies.iterator();
 		while (enemyIterator.hasNext()) {
 			Enemy e = enemyIterator.next();
-			e.update();
-			if (e.y > screenHeight) {
+			e.update(delta);
+			if (e.pos.y > screenHeight) {
 				enemyIterator.remove();
 			}
 		}
 		
+		if (random.nextInt(100) < 2) {
+			Vec2D pos = new Vec2D(
+				random.nextInt(screenWidth - 50), -50
+			);
+			enemies.add(new Enemy(
+				pos, "alien" + random.nextInt(4) + 1)
+			);
+		}
+
 		checkCollisions();
 	}
 
 	private void checkCollisions() {
-		Rectangle playerRect = new Rectangle(player.x, player.y, player.width, player.height);
+		Rectangle playerRect = new Rectangle(
+			(int) player.pos.x,
+			(int) player.pos.y,
+			(int) player.size.x,
+			(int) player.size.y
+		);
 
 		Iterator<Bullet> bulletIterator = bullets.iterator();
 		while (bulletIterator.hasNext()) {
 			Bullet bullet = bulletIterator.next();
-			Rectangle bulletRect = new Rectangle(bullet.x, bullet.y, bullet.width, bullet.height);
+			Rectangle bulletRect = new Rectangle(
+				(int) bullet.pos.x,
+				(int) bullet.pos.y,
+				(int) bullet.size.x,
+				(int) bullet.size.y
+			);
 
 			Iterator<Enemy> enemyIterator = enemies.iterator();
 			while (enemyIterator.hasNext()) {
 				Enemy enemy = enemyIterator.next();
-				Rectangle enemyRect = new Rectangle(enemy.x, enemy.y, enemy.width, enemy.height);
+				Rectangle enemyRect = new Rectangle(
+					(int) enemy.pos.x,
+					(int) enemy.pos.y,
+					(int) enemy.size.x,
+					(int) enemy.size.y
+				);
 
 				if (bulletRect.intersects(enemyRect)) {
 					bulletIterator.remove(); 
@@ -166,11 +206,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		Iterator<Enemy> enemyIterator = enemies.iterator();
 		while (enemyIterator.hasNext()) {
 			Enemy enemy = enemyIterator.next();
-			Rectangle enemyRect = new Rectangle(enemy.x, enemy.y, enemy.width, enemy.height);
+			Rectangle enemyRect = new Rectangle(
+				(int) enemy.pos.x,
+				(int) enemy.pos.y,
+				(int) enemy.size.x,
+				(int) enemy.size.y
+			);
 			if (playerRect.intersects(enemyRect)) {
 				soundManager.playSound("explosion.wav");
 				System.out.println("Fim de Jogo!");
-				gameOver = true;
+				status = GameStatus.GAME_OVER;
 			}
 		}
 	}
@@ -210,11 +255,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 
 		// Menu de pause
-		if (paused) {
+		if (status == GameStatus.PAUSED) {
 			int menuWidth = 200;
 			int menuHeight = 200;
 			g2.fillRect(screenWidth/2 - menuWidth/2, screenHeight/2 - menuHeight/2, menuWidth, menuHeight);
-		} else if (gameOver) {
+		} else if (status == GameStatus.GAME_OVER) {
 			g2.setColor(Color.WHITE);
 			g2.setFont(new Font("Arial", Font.BOLD, 50));
 			String gameOverText = "GAME OVER";
@@ -237,10 +282,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 	private void resetGame() {
 		score = 0;
-		player.x = screenWidth / 2 - 25;
+		player.pos.x = screenWidth / 2 - 25;
 		bullets.clear();
 		enemies.clear();
-		gameOver = false;
+		status = GameStatus.GAME_OVER;
 	}
 
 	@Override

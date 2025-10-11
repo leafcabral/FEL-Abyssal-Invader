@@ -11,7 +11,6 @@ public class Bullet extends GameObject{
 	@Override
 	public void update(float delta) {
 		super.move(delta);
-		
 	}
 	
 	public static Bullet newDefaultBullet(Vec2D pos) {
