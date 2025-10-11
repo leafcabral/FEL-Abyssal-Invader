@@ -34,13 +34,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 	private Thread gameThread;
 	private Random random;
+	private float fps = 60;
 	
-	private ArrayList<GameObject> gameObjects;
+	private Player player;
+	private ArrayList<Enemy> enemies;
+	private ArrayList<Bullet> bullets;
+	
 	private ImageManager imageManager;
 	private SoundManager soundManager;
 	private InputManager inputManager;
 	
-
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
 		this.setBackground(Color.BLACK);
@@ -48,9 +51,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.setFocusable(true);
 		this.addKeyListener(this);
 
-		this.gameObjects.add(new Player(new Vec2D(
-			screenWidth / 2, screenHeight - 100)
+		this.player = new Player(new Vec2D(
+			screenWidth / 2, screenHeight - 100
 		));
+		this.enemies = new ArrayList<>();
+		this.bullets = new ArrayList<>();
+		
 		this.soundManager = new SoundManager();
 		this.imageManager = new ImageManager();
 		this.inputManager = new InputManager();
@@ -86,22 +92,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	}
 
 	public void update() {
-		if (gameOver) {
-			return;
-		}
-		if (paused) {
+		if (status != GameStatus.RUNNING) {
 			return;
 		}
 
-		if (isLeftPressed) player.x -= player.speed;
-		if (isRightPressed) player.x += player.speed;
-		if (isUpPressed) player.y -= player.speed;
-		if (isDownPressed) player.y += player.speed;
+		if (inputManager.isActionPressed("left")) {
+			player.pos.x -= player.speed;
+		}
+		if (inputManager.isActionPressed("right")) {
+			player.pos.x += player.speed;
+		}
 
-		if (player.x < 0) player.x = 0;
-		if (player.x > screenWidth - player.width) player.x = screenWidth - player.width;
-		if (player.y < 0) player.y = 0;
-		if (player.y > screenHeight - player.height) player.y = screenHeight - player.height;
+		if (player.pos.x < 0) player.x = 0;
+		if (player.pos.x > screenWidth - player.size.x) player.x = screenWidth - player.size.x;
+		if (player.pos.y < 0) player.y = 0;
+		if (player.pos.y > screenHeight - player.size.y) player.y = screenHeight - player.size.y;
 		
 		long currentTime = System.currentTimeMillis();
 		if (isShooting && currentTime - lastShotTime > shootDelay) {
@@ -243,53 +248,31 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		int code = e.getKeyCode();
+		inputManager.keyPressed(e.getKeyCode());
 
-		if (code == KeyEvent.VK_ESCAPE) {
-			if (!gameOver) this.paused = !this.paused;
+		// Só deve checar quando clicar, e não todo frame
+		if (inputManager.isActionPressed("menu")) {
+			if (status == GameStatus.RUNNING) {
+				status = GameStatus.PAUSED;
+			}
+			else if (status == GameStatus.PAUSED) {
+				status = GameStatus.RUNNING;
+			}
 		}
-		if (code == KeyEvent.VK_Q) {
-			if (gameOver || paused) System.exit(0);
+		if (inputManager.isActionPressed("quit")) {
+			if (status != GameStatus.RUNNING) {
+				System.exit(0);
+			}
 		}
-
-		if (code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A) {
-			isLeftPressed = true;
-		}
-		if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) {
-			isRightPressed = true;
-		}
-		if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
-			isUpPressed = true;
-		}
-		if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) {
-			isDownPressed = true;
-		}
-		if (code == KeyEvent.VK_SPACE) {
-			isShooting = true;
+		if (inputManager.isActionPressed("restart")) {
+			if (status == GameStatus.GAME_OVER) {
+				resetGame();
+			}
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		int code = e.getKeyCode();
-		if (code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A) {
-			isLeftPressed = false;
-		}
-		if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) {
-			isRightPressed = false;
-		}
-		if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
-			isUpPressed = false;
-		}
-		if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) {
-			isDownPressed = false;
-		}
-		if (code == KeyEvent.VK_SPACE) {
-			isShooting = false;
-		}
-
-		if (gameOver && code == KeyEvent.VK_ENTER) {
-			resetGame();
-		}
+		inputManager.keyReleased(e.getKeyCode());
 	}
 }

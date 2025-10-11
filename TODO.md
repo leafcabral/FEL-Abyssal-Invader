@@ -10,9 +10,9 @@
 	- [ ] 4: Divide em dois
 - [ ] Adicionar chefão após *wave* final
 - [ ] Adicionar sistema de vidas
-- [ ] Adicionar novas armas com munição limitada
-	- [ ] Shotgun
-	- [ ] Ray-beam gun
+- [ ] Adicionar novas tipos de munição (limitadas)
+	- [ ] Tiro que se espalha (shotgun)
+	- [ ] Tiro concentrado grande (blast)
 - [ ] Adicionar sistema de pontuação
 - [ ] Clique duplo para girar e mover rápido
 - [ ] Jogador resgata tesouro do planeta após derrotar chefe
