@@ -3,7 +3,6 @@
 Quando menor o nível, maior a prioridade.
 
 ## Essencial para fazer o resto
-- [ ] Juntar ImageManager e SoundManager em ResourceManager
 - [ ] Fazer inimigos voltarem a spawnar
 - [ ] Consertar handleCollision()
 - [ ] Adicionar sistema de vidas

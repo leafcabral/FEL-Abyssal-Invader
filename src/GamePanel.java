@@ -35,12 +35,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private Thread gameThread;
 	private final Random random;
 	
+	private final Enemy dummyEnemy;
+	private final Bullet dummyBullet;
+	
 	private final Player player;
 	private final CopyOnWriteArrayList<Enemy> enemies;
 	private final CopyOnWriteArrayList<Bullet> bullets;
 	
 	private final ResourceManager resources;
 	private final InputManager inputManager;
+	
+	private float nextSpawnTime = 0;
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -65,6 +70,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.player.pos.x -= this.player.size.x/2;
 		this.enemies = new CopyOnWriteArrayList<>();
 		this.bullets = new CopyOnWriteArrayList<>();
+		
+		dummyEnemy = new Enemy(
+			new Vec2D(screenWidth, screenHeight),
+			resources.getImage("alien1")
+		);
+		dummyBullet = Bullet.newDefaultBullet(
+			new Vec2D(screenWidth, screenHeight),
+			resources.getImage("bullet1")
+		);
 	}
 
 	public void startGameThread() {
@@ -122,6 +136,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		// TODO: Adicionar mudança de armas
 	}
 	
+	private void spawnEnemy() {
+		Vec2D pos = new Vec2D();
+		pos.x = random.nextInt(screenWidth - (int)dummyEnemy.size.x);
+		pos.y = -(int)dummyEnemy.size.y;
+		String imgName = "alien" + (random.nextInt(4) + 1);
+		
+		enemies.add(new Enemy(pos, resources.getImage(imgName)));
+	}
+	
 	public void update() {
 		if (status != GameStatus.RUNNING) {
 			return;
@@ -139,14 +162,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			return enemy.pos.y > screenHeight;
 		});
 		
-		if (random.nextInt(100) < 2) {
-			Vec2D pos = new Vec2D(
-				random.nextInt(screenWidth - 50), -50
-			);
-			enemies.add(new Enemy(
-				pos, resources.getImage(
-					"alien" + random.nextInt(4) + 1)
-			));
+		if ((nextSpawnTime -= delta) <= 0) {
+			spawnEnemy();
+			
+			// Entre 0.5 a 1.5 segundos
+			nextSpawnTime = random.nextFloat() + 0.5f;
 		}
 
 		checkCollisions();
