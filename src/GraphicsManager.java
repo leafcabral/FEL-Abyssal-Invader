@@ -67,6 +67,14 @@ public class GraphicsManager {
 		}
 	}
 	
+	private void drawMenuBox(Graphics2D g2, Vec2D pos, Vec2D size) {
+		g2.setColor(new Color(60, 60, 60));
+		g2.fillRect((int)pos.x, (int)pos.y,(int)size.x, (int)size.y);
+		
+		g2.setColor(Color.WHITE);
+		g2.drawRect((int)pos.x, (int)pos.y,(int)size.x, (int)size.y);
+	}
+	
 	public void drawGenericMenu(
 			Graphics2D g2, String title,
 			MenuOption options[], int selectedIndex
@@ -75,30 +83,21 @@ public class GraphicsManager {
 		g2.fillRect(0, 0, (int)screenSize.x, (int)screenSize.y);
 		
 		// Altura é a mesma
-		Vec2D optionSize = new Vec2D(0, 35);
+		Vec2D optionSize = new Vec2D(0, 22);
 		
 		Vec2D menuSize = new Vec2D(
-			200, options.length * optionSize.y + 80
+			200, options.length * (optionSize.y+10) + 60
 		);
 		Vec2D menuPos = new Vec2D(
 			screenCenter.x - menuSize.x / 2,
 			screenCenter.y - menuSize.y / 2
 		);
 		
-		g2.setColor(new Color(60, 60, 60));
-		g2.fillRect(
-			(int)menuPos.x, (int)menuPos.y,
-			(int)menuSize.x, (int)menuSize.y
-		);
-		g2.setColor(Color.WHITE);
-		g2.drawRect(
-			(int)menuPos.x, (int)menuPos.y,
-			(int)menuSize.x, (int)menuSize.y
-		);
+		drawMenuBox(g2, menuPos, menuSize);
 		
 		g2.setFont(new Font("Arial", Font.BOLD, 20));
 		int titleWidth = g2.getFontMetrics().stringWidth(title);
-		g2.drawString(title, (screenSize.x - titleWidth) / 2, menuPos.y + 30);
+		g2.drawString(title, (screenSize.x - titleWidth) / 2, menuPos.y + 25);
 		
 		g2.setFont(new Font("Arial", Font.PLAIN, 16));
 		for (int i = 0; i < options.length; i++) {
@@ -109,17 +108,17 @@ public class GraphicsManager {
 			);
 			Vec2D optionPos = new Vec2D(
 				screenCenter.x - optionSize.x/2,
-				(int)menuPos.y + i*optionSize.y + 70
+				(int)menuPos.y + 25 + i*(optionSize.y + 5) + 40
 			);
 			
 			if (i == selectedIndex) {
 				g2.setColor(Color.WHITE);
-				g2.drawString(">", optionSize.x - 10, optionPos.y);
+				g2.drawString(">", optionPos.x - 20, optionPos.y);
 			} else {
 				g2.setColor(Color.LIGHT_GRAY);
 			}
 			
-			g2.drawString(option.name(), optionPos.x, optionPos.x);
+			g2.drawString(option.name(), optionPos.x, optionPos.y);
 		}
 	}
 	
