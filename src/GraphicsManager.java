@@ -12,25 +12,36 @@ import java.util.ArrayList;
 - Desenhar linhas CRT
 */
 public class GraphicsManager {
+	public enum MenuOption {
+		RESUME,
+		RESTART,
+		QUIT
+	}
+	
 	public final Vec2D screenSize;
 	public final Vec2D screenCenter;
 	
-	public GraphicsManager(Vec2D screenSize) {
+	private final BufferedImage backgroundImage;
+	private final Color backgroundColor;
+	
+	public GraphicsManager(
+			Vec2D screenSize,
+			BufferedImage backgroundImage, Color backgroundColor
+	) {
 		this.screenSize = screenSize;
 		this.screenCenter = screenSize.multiply(0.5f);
+		this.backgroundImage = backgroundImage;
+		this.backgroundColor = backgroundColor;
 	}
 	
-	public void drawBackground(
-			Graphics2D g2,
-			BufferedImage img, Color fallbackColor
-	) {
-		if (img != null) {
+	public void drawBackground(Graphics2D g2) {
+		if (backgroundImage != null) {
 			g2.drawImage(
-				img, 0, 0,
+				backgroundImage, 0, 0,
 				(int)screenSize.x, (int)screenSize.y, null
 			);
 		} else {
-			g2.setColor(fallbackColor);
+			g2.setColor(backgroundColor);
 			g2.fillRect(0, 0, (int)screenSize.x, (int)screenSize.y);
 		}
 	}
@@ -43,25 +54,28 @@ public class GraphicsManager {
 			obj.draw(g2);
 		}
 	}
-	public void drawObjects(
-			Graphics2D g2, 
-			ArrayList<GameObject> objs
-	) {
+	public void drawObjects(Graphics2D g2, ArrayList<GameObject> objs) {
 		for (GameObject obj : objs) {
 			obj.draw(g2);
 		}
 	}
 	
 	public void drawGenericMenu(
-			Graphics2D g2, Vec2D screenSize,
-			String title) {
+			Graphics2D g2, String title,
+			MenuOption options[], int selectedIndex
+	) {
 		g2.setColor(new Color(0, 0, 0, 180));
 		g2.fillRect(0, 0, (int)screenSize.x, (int)screenSize.y);
 		
-		Vec2D menuSize = new Vec2D(200, 200);
+		// Altura é a mesma
+		Vec2D optionSize = new Vec2D(0, 35);
+		
+		Vec2D menuSize = new Vec2D(
+			200, options.length * optionSize.y + 80
+		);
 		Vec2D menuPos = new Vec2D(
-			screenSize.x / 2 - menuSize.x / 2,
-			screenSize.y / 2 - menuSize.y / 2
+			screenCenter.x - menuSize.x / 2,
+			screenCenter.y - menuSize.y / 2
 		);
 		
 		g2.setColor(new Color(60, 60, 60));
@@ -78,9 +92,39 @@ public class GraphicsManager {
 		g2.setFont(new Font("Arial", Font.BOLD, 20));
 		int titleWidth = g2.getFontMetrics().stringWidth(title);
 		g2.drawString(title, (screenSize.x - titleWidth) / 2, menuPos.y + 30);
+		
+		g2.setFont(new Font("Arial", Font.PLAIN, 16));
+		for (int i = 0; i < options.length; i++) {
+			MenuOption option = options[i];
+			
+			optionSize.x = g2.getFontMetrics().stringWidth(
+				option.name()
+			);
+			Vec2D optionPos = new Vec2D(
+				screenCenter.x - optionSize.x/2,
+				(int)menuPos.y + i*optionSize.y + 70
+			);
+			
+			if (i == selectedIndex) {
+				g2.setColor(Color.WHITE);
+				g2.drawString(">", optionSize.x - 10, optionPos.y);
+			} else {
+				g2.setColor(Color.LIGHT_GRAY);
+			}
+			
+			g2.drawString(option.name(), optionPos.x, optionPos.x);
+		}
 	}
 	
-	public static void drawPauseMenu(Graphics2D g2) {
-		
+	public void drawPauseMenu(Graphics2D g2, int selectedIndex) {
+		drawGenericMenu(g2, "Game Paused", new MenuOption[]{
+			MenuOption.RESUME, MenuOption.QUIT
+		}, selectedIndex);
+	}
+	
+	public void drawGameOverMenu(Graphics2D g2, int selectedIndex) {
+		drawGenericMenu(g2, "Game Over", new MenuOption[]{
+			MenuOption.RESTART, MenuOption.QUIT
+		}, selectedIndex);
 	}
 }
