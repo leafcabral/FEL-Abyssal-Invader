@@ -152,7 +152,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 		handlePlayerInput();
 		player.update(delta);
-
+		
+		// Remove os que sairam da tela
 		bullets.removeIf(bullet -> {
 			bullet.update(delta);
 			return bullet.pos.y < 0; 
@@ -162,9 +163,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			return enemy.pos.y > screenHeight;
 		});
 		
+		// Cria novo inimigo
 		if ((nextSpawnTime -= delta) <= 0) {
 			spawnEnemy();
-			
 			// Entre 0.5 a 1.5 segundos
 			nextSpawnTime = random.nextFloat() + 0.5f;
 		}

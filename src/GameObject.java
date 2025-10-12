@@ -69,4 +69,25 @@ public abstract class GameObject {
 	public void move(float delta) {
 		pos.addIp(getVelocity().multiply(delta));
 	}
+	
+	public float left() {
+		return this.pos.y;
+	}
+	public float right() {
+		return this.pos.y + this.size.x;
+	}
+	public float top() {
+		return this.pos.y;
+	}
+	public float bottom() {
+		return this.pos.y + this.size.y;
+	}
+	
+	public boolean collides(GameObject other) {
+		return (this.left() < other.right() &&
+			this.right() > other.left() &&
+			this.top() < other.bottom() &&
+			this.bottom() > other.top()
+		);
+	}
 }
