@@ -267,7 +267,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		player.pos.x = screenWidth / 2 - 25;
 		bullets.clear();
 		enemies.clear();
-		status = GameStatus.GAME_OVER;
+		status = GameStatus.RUNNING;
 	}
 
 	@Override
