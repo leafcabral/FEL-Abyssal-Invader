@@ -3,8 +3,6 @@
 Quando menor o nível, maior a prioridade.
 
 ## Essencial para fazer o resto
-- [ ] Fazer inimigos voltarem a spawnar
-- [ ] Consertar handleCollision()
 - [ ] Adicionar sistema de vidas
 
 ## Extremamente importante para o jogo

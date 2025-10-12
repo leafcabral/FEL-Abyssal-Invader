@@ -71,10 +71,10 @@ public abstract class GameObject {
 	}
 	
 	public float left() {
-		return this.pos.y;
+		return this.pos.x;
 	}
 	public float right() {
-		return this.pos.y + this.size.x;
+		return this.pos.x + this.size.x;
 	}
 	public float top() {
 		return this.pos.y;

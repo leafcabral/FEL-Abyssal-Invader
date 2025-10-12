@@ -14,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import java.time.Instant;
 import java.time.Duration;
+import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public enum GameStatus {
@@ -174,36 +175,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	}
 
 	private void checkCollisions() {
-		Rectangle playerRect = new Rectangle(
-			(int) player.pos.x,
-			(int) player.pos.y,
-			(int) player.size.x,
-			(int) player.size.y
-		);
-
-		Iterator<Bullet> bulletIterator = bullets.iterator();
-		while (bulletIterator.hasNext()) {
-			Bullet bullet = bulletIterator.next();
-			Rectangle bulletRect = new Rectangle(
-				(int) bullet.pos.x,
-				(int) bullet.pos.y,
-				(int) bullet.size.x,
-				(int) bullet.size.y
-			);
-
-			Iterator<Enemy> enemyIterator = enemies.iterator();
-			while (enemyIterator.hasNext()) {
-				Enemy enemy = enemyIterator.next();
-				Rectangle enemyRect = new Rectangle(
-					(int) enemy.pos.x,
-					(int) enemy.pos.y,
-					(int) enemy.size.x,
-					(int) enemy.size.y
-				);
-
-				if (bulletRect.intersects(enemyRect)) {
-					bulletIterator.remove(); 
-					enemyIterator.remove();
+		ArrayList<Bullet> bulletsToRemove = new ArrayList<>();
+		ArrayList<Enemy> enemiesToRemove = new ArrayList<>();
+		
+		for (Bullet bullet : bullets) {
+			for (Enemy enemy : enemies) {
+				if (bullet.collides(enemy)) {
+					bulletsToRemove.add(bullet);
+					enemiesToRemove.add(enemy);
 					resources.playSound("explosion");
 					score += 10;
 					break;
@@ -211,16 +190,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			}
 		}
 
-		Iterator<Enemy> enemyIterator = enemies.iterator();
-		while (enemyIterator.hasNext()) {
-			Enemy enemy = enemyIterator.next();
-			Rectangle enemyRect = new Rectangle(
-				(int) enemy.pos.x,
-				(int) enemy.pos.y,
-				(int) enemy.size.x,
-				(int) enemy.size.y
-			);
-			if (playerRect.intersects(enemyRect)) {
+		bullets.removeAll(bulletsToRemove);
+		enemies.removeAll(enemiesToRemove);
+		
+		for (Enemy enemy : enemies) {
+			if (player.collides(enemy)) {
 				resources.playSound("explosion");
 				System.out.println("Fim de Jogo!");
 				status = GameStatus.GAME_OVER;
