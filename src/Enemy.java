@@ -13,11 +13,11 @@ public class Enemy extends GameObject {
 		super(pos, size, direction, speed, sprite, fallback_color);
 		this.life = life;
 	}
-	public Enemy(Vec2D pos, String alienName) {
+	public Enemy(Vec2D pos, BufferedImage img) {
 		this(
 			pos, new Vec2D(50,50),
 			new Vec2D(0, -1), 3,
-			ImageManager.getImage(alienName), Color.RED,
+			img, Color.RED,
 			5
 		);
 	}

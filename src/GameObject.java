@@ -56,8 +56,8 @@ public abstract class GameObject {
 	
 	public Vec2D getCenter() {
 		Vec2D center = new Vec2D();
-		center.x = pos.x + (size.x * 2);
-		center.y = pos.y + (size.y * 2);
+		center.x = pos.x + (size.x / 2);
+		center.y = pos.y + (size.y / 2);
 		
 		return center;
 	}

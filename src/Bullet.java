@@ -13,11 +13,11 @@ public class Bullet extends GameObject{
 		super.move(delta);
 	}
 	
-	public static Bullet newDefaultBullet(Vec2D pos) {
+	public static Bullet newDefaultBullet(Vec2D pos, BufferedImage img) {
 		return new Bullet(
 			pos, new Vec2D(10, 20),
 			new Vec2D(0, -1), 1600,
-			ImageManager.getImage("bullet1"), Color.YELLOW
+			img, Color.YELLOW
 		);
 	}
 }

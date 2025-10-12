@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 import java.awt.Font;
@@ -40,8 +39,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private final CopyOnWriteArrayList<Enemy> enemies;
 	private final CopyOnWriteArrayList<Bullet> bullets;
 	
-	private final ImageManager imageManager;
-	private final SoundManager soundManager;
+	private final ResourceManager resources;
 	private final InputManager inputManager;
 	
 	public GamePanel() {
@@ -51,19 +49,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.setFocusable(true);
 		this.addKeyListener(this);
 
-		this.soundManager = new SoundManager();
-		this.imageManager = new ImageManager();
+		this.resources = new ResourceManager(true);
 		this.inputManager = new InputManager();
 		
-		this.background = ImageManager.getImage("background1");
+		this.background = resources.getImage("background1");
 		this.random = new Random();
 		
 		this.status = GameStatus.MAIN_MENU;
 		this.lastFrameTime = Instant.now();
 		
-		this.player = new Player(new Vec2D(
-			screenWidth / 2, screenHeight - 100
-		));
+		this.player = new Player(
+			new Vec2D(screenWidth / 2, screenHeight - 100),
+			resources.getImage("player")
+		);
 		this.player.pos.x -= this.player.size.x/2;
 		this.enemies = new CopyOnWriteArrayList<>();
 		this.bullets = new CopyOnWriteArrayList<>();
@@ -108,10 +106,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		);
 		
 		if (inputManager.isActionPressed("shoot")) {
-			Bullet bullet = player.shoot();
-			if (bullet != null) {
-				bullets.add(bullet);
-				soundManager.playSound("shot.wav");
+			if (player.canShoot()) {
+				bullets.add(Bullet.newDefaultBullet(
+					player.getCenter().add(
+						new Vec2D(0, -player.size.y)
+					),
+					resources.getImage("bullet1")
+				));
+				resources.playSound("shot");
+				
+				player.resetShootTimer();
 			}
 		}
 		
@@ -140,8 +144,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				random.nextInt(screenWidth - 50), -50
 			);
 			enemies.add(new Enemy(
-				pos, "alien" + random.nextInt(4) + 1)
-			);
+				pos, resources.getImage(
+					"alien" + random.nextInt(4) + 1)
+			));
 		}
 
 		checkCollisions();
@@ -178,7 +183,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				if (bulletRect.intersects(enemyRect)) {
 					bulletIterator.remove(); 
 					enemyIterator.remove();
-					soundManager.playSound("explosion.wav");
+					resources.playSound("explosion");
 					score += 10;
 					break;
 				}
@@ -195,7 +200,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				(int) enemy.size.y
 			);
 			if (playerRect.intersects(enemyRect)) {
-				soundManager.playSound("explosion.wav");
+				resources.playSound("explosion");
 				System.out.println("Fim de Jogo!");
 				status = GameStatus.GAME_OVER;
 			}

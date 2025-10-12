@@ -15,11 +15,11 @@ public class Player extends GameObject {
 		super(pos, size, direction, speed, sprite, fallback_color);
 		this.life = life;
 	}
-	public Player(Vec2D pos) {
+	public Player(Vec2D pos, BufferedImage img) {
 		this(
 			pos, new Vec2D(75, 75),
 			new Vec2D(0, -1), 700, 
-			ImageManager.getImage("player"), Color.GREEN,
+			img, Color.GREEN,
 			5
 		);
 	}
@@ -34,15 +34,15 @@ public class Player extends GameObject {
 		}
 	};
 	
-	public void makeIvencible(float seconds) {
+	public void makeInvencible(float seconds) {
 		iFrameSeconds = seconds;
 	}
 	
-	public Bullet shoot() {
-		if (shootTimer <= 0) {
-			shootTimer = shootDelay;
-			return Bullet.newDefaultBullet(pos.add(new Vec2D(0,5)));
-		}
-		return null;
+	public Boolean canShoot() {
+		return shootTimer <= 0;
+	}
+	
+	public void resetShootTimer() {
+		shootTimer = shootDelay;
 	}
 }
