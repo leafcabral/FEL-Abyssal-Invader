@@ -43,7 +43,6 @@ public abstract class GameObject {
 				null
 			);
 		}
-		
 	}
 	
 	public void draw_fallback(Graphics2D g2) {

@@ -15,6 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.time.Instant;
 import java.time.Duration;
 import java.util.ArrayList;
+import javax.swing.JButton;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public enum GameStatus {
@@ -201,13 +202,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			}
 		}
 	}
-
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 
-	   // Desenhar fundo
+		// Desenhar fundo
 		if (background != null) {
 			g2.drawImage(background, 0, 0, screenWidth, screenHeight, null);
 		} else {
