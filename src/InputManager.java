@@ -40,11 +40,9 @@ public class InputManager {
 		keyBindings.put("down", Set.of(
 			KeyEvent.VK_S, KeyEvent.VK_DOWN
 		));
-		
-		// Outros controles
-		keyBindings.put("quit", Set.of(KeyEvent.VK_Q));
-		keyBindings.put("restart", Set.of(KeyEvent.VK_R));
-		
+		keyBindings.put("confirm", Set.of(
+			KeyEvent.VK_ENTER
+		));
 		
 		for (Set<Integer> keys : keyBindings.values()) {
 			for (int key : keys) {

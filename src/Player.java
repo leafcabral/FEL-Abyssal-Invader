@@ -18,7 +18,7 @@ public class Player extends GameObject {
 	public Player(Vec2D pos, BufferedImage img) {
 		this(
 			pos, new Vec2D(75, 75),
-			new Vec2D(0, -1), 700, 
+			new Vec2D(0, -1), 500, 
 			img, Color.GREEN,
 			5
 		);
