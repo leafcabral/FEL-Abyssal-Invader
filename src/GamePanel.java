@@ -27,7 +27,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	
 	private final int screenWidth = 800;
 	private final int screenHeight = 800;
-	private final BufferedImage background;
 	
 	private GameStatus status;
 	private Instant lastFrameTime;
@@ -45,9 +44,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private final CopyOnWriteArrayList<Bullet> bullets;
 	
 	private final ResourceManager resources;
-	private final InputManager inputManager;
+	private final GraphicsManager graphics;
+	private final InputManager input;
 	
 	private float nextSpawnTime = 0;
+	private int menuSelectedOptionIndex = 0;
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -57,9 +58,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.addKeyListener(this);
 
 		this.resources = new ResourceManager(true);
-		this.inputManager = new InputManager();
+		this.graphics = new GraphicsManager(
+			new Vec2D(screenWidth, screenHeight),
+			resources.getImage("background1"),
+			Color.BLACK
+		);
+		this.input = new InputManager();
 		
-		this.background = resources.getImage("background1");
 		this.random = new Random();
 		
 		this.status = GameStatus.MAIN_MENU;
@@ -110,10 +115,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private void handlePlayerInput() {
 		float playerVelocity = player.speed * delta;
 		
-		if (inputManager.isActionPressed("moveLeft")) {
+		if (input.isActionPressed("moveLeft")) {
 			player.pos.x -= playerVelocity;
 		}
-		if (inputManager.isActionPressed("moveRight")) {
+		if (input.isActionPressed("moveRight")) {
 			player.pos.x += playerVelocity;
 		}
 		// Se fora, coloca pra dentro
@@ -121,7 +126,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			player.pos.x, screenWidth - player.size.x)
 		);
 		
-		if (inputManager.isActionPressed("shoot")) {
+		if (input.isActionPressed("shoot")) {
 			if (player.canShoot()) {
 				bullets.add(Bullet.newDefaultBullet(
 					player.getCenter().add(
@@ -209,13 +214,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		Graphics2D g2 = (Graphics2D) g;
 
 		// Desenhar fundo
-		if (background != null) {
-			g2.drawImage(background, 0, 0, screenWidth, screenHeight, null);
-		} else {
-			// Se a imagem de fundo não carregar, preenche com preto.
-			g2.setColor(Color.BLACK);
-			g2.fillRect(0, 0, screenWidth, screenHeight);
-		}
+		graphics.drawBackground(g2);
 
 		// Desenhar jogo
 		g2.setColor(Color.WHITE);
@@ -227,37 +226,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		int exitTextWidth = g2.getFontMetrics().stringWidth(exitText);
 		g2.drawString(exitText, screenWidth - exitTextWidth - 10, 20);
 
-		player.draw(g2); 
-
-		for (Bullet b : bullets) {
-			b.draw(g2);
-		}
-
-		for (Enemy e : enemies) {
-			e.draw(g2);
-		}
+		graphics.drawObjects(g2, new ArrayList(bullets));
+		graphics.drawObjects(g2, new ArrayList(enemies));
+		graphics.drawObject(g2, player);
 
 		// Menu de pause
 		if (status == GameStatus.PAUSED) {
-			int menuWidth = 200;
-			int menuHeight = 200;
-			g2.fillRect(screenWidth/2 - menuWidth/2, screenHeight/2 - menuHeight/2, menuWidth, menuHeight);
+			graphics.drawPauseMenu(g2, menuSelectedOptionIndex);
 		} else if (status == GameStatus.GAME_OVER) {
-			g2.setColor(Color.WHITE);
-			g2.setFont(new Font("Arial", Font.BOLD, 50));
-			String gameOverText = "GAME OVER";
-			int gameOverTextWidth = g2.getFontMetrics().stringWidth(gameOverText);
-			g2.drawString(gameOverText, (screenWidth - gameOverTextWidth) / 2, screenHeight / 2 - 50);
-
-			g2.setFont(new Font("Arial", Font.PLAIN, 30));
-			String scoreText = "Pontuação Final: " + score;
-			int scoreTextWidth = g2.getFontMetrics().stringWidth(scoreText);
-			g2.drawString(scoreText, (screenWidth - scoreTextWidth) / 2, screenHeight / 2);
-			
-			String restartText = "Pressione ENTER para jogar novamente";
-			int restartTextWidth = g2.getFontMetrics().stringWidth(restartText);
-			g2.drawString(restartText, (screenWidth - restartTextWidth) / 2, screenHeight / 2 + 50);
-
+			graphics.drawGameOverMenu(g2, menuSelectedOptionIndex);
 		}
 
 		g2.dispose();
@@ -276,31 +253,22 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		inputManager.keyPressed(e.getKeyCode());
+		input.keyPressed(e.getKeyCode());
 		
 		// Só deve checar quando clicar, e não todo frame
-		if (inputManager.isActionPressed("menu")) {
+		if (input.isActionPressed("menu")) {
 			if (status == GameStatus.RUNNING) {
 				status = GameStatus.PAUSED;
+				menuSelectedOptionIndex = 0;
 			}
 			else if (status == GameStatus.PAUSED) {
 				status = GameStatus.RUNNING;
-			}
-		}
-		if (inputManager.isActionPressed("quit")) {
-			if (status != GameStatus.RUNNING) {
-				System.exit(0);
-			}
-		}
-		if (inputManager.isActionPressed("restart")) {
-			if (status == GameStatus.GAME_OVER) {
-				resetGame();
 			}
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		inputManager.keyReleased(e.getKeyCode());
+		input.keyReleased(e.getKeyCode());
 	}
 }

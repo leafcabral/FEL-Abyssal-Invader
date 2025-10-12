@@ -24,6 +24,13 @@ public class GraphicsManager {
 	private final BufferedImage backgroundImage;
 	private final Color backgroundColor;
 	
+	public MenuOption pausedOptions[] = {
+		MenuOption.RESUME, MenuOption.QUIT
+	};
+	public MenuOption gameOverOptions[] = {
+		MenuOption.RESTART, MenuOption.QUIT
+	};
+	
 	public GraphicsManager(
 			Vec2D screenSize,
 			BufferedImage backgroundImage, Color backgroundColor
@@ -117,14 +124,10 @@ public class GraphicsManager {
 	}
 	
 	public void drawPauseMenu(Graphics2D g2, int selectedIndex) {
-		drawGenericMenu(g2, "Game Paused", new MenuOption[]{
-			MenuOption.RESUME, MenuOption.QUIT
-		}, selectedIndex);
+		drawGenericMenu(g2, "Game Paused", pausedOptions, selectedIndex);
 	}
 	
 	public void drawGameOverMenu(Graphics2D g2, int selectedIndex) {
-		drawGenericMenu(g2, "Game Over", new MenuOption[]{
-			MenuOption.RESTART, MenuOption.QUIT
-		}, selectedIndex);
+		drawGenericMenu(g2, "Game Over", gameOverOptions, selectedIndex);
 	}
 }
