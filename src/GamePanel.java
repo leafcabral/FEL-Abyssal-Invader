@@ -256,6 +256,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		input.keyPressed(e.getKeyCode());
 		
 		// Só deve checar quando clicar, e não todo frame
+		handleMenuInput();
+	}
+
+	private void handleMenuInput() {
 		if (input.isActionPressed("menu")) {
 			if (status == GameStatus.RUNNING) {
 				status = GameStatus.PAUSED;
@@ -265,8 +269,40 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				status = GameStatus.RUNNING;
 			}
 		}
+		
+		// menuSelectedOptionIndex
+		if (input.isActionPressed("up")) {
+			menuSelectedOptionIndex++;
+			menuSelectedOptionIndex	%= 2;
+			if (menuSelectedOptionIndex < 0) {
+				menuSelectedOptionIndex *= -1;
+			}
+		}
+		if (input.isActionPressed("down")) {
+			menuSelectedOptionIndex--;
+			menuSelectedOptionIndex	%= -2;
+			if (menuSelectedOptionIndex < 0) {
+				menuSelectedOptionIndex *= -1;
+			}
+		}
+		
+		if (input.isActionPressed("confirm")) {
+			GraphicsManager.MenuOption option = GraphicsManager.MenuOption.RESUME;
+			
+			switch (status) {
+				case GameStatus.PAUSED -> option = graphics.pausedOptions[menuSelectedOptionIndex];
+				case GameStatus.GAME_OVER -> option = graphics.gameOverOptions[menuSelectedOptionIndex];
+			}
+			switch (option) {
+				case GraphicsManager.MenuOption.RESUME -> status = GameStatus.RUNNING;
+				case GraphicsManager.MenuOption.RESTART -> resetGame();
+				case GraphicsManager.MenuOption.QUIT -> System.exit(0);
+			}
+			
+			menuSelectedOptionIndex = 0;
+		}
 	}
-
+	
 	@Override
 	public void keyReleased(KeyEvent e) {
 		input.keyReleased(e.getKeyCode());
