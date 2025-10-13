@@ -28,18 +28,24 @@ public class ResourceManager {
 	
 	private void preloadImages() {
 		// Player
-		loadImage("player", "player/player_1.png");
+		loadImage("player1", "player/player_1.png");
+		loadImage("player2", "player/player_2.png");
+		loadImage("player3", "player/player_3.png");
 		// Enemies
-		loadImage("alien1", "enemies/alien_1.png");
-		loadImage("alien2", "enemies/alien_2.png");
-		loadImage("alien3", "enemies/alien_3.png");
-		loadImage("alien4", "enemies/alien_4.png");
+		loadImage("enemy1", "enemies/enemy1.png");
+		loadImage("enemy2", "enemies/enemy2.png");
+		loadImage("enemy3", "enemies/enemy3.png");
+		loadImage("enemy4", "enemies/enemy4.png");
+		loadImage("enemy5", "enemies/enemy5.png");
+		loadImage("enemy6", "enemies/enemy6.png");
 		// Bullets
-		loadImage("bullet1", "bullet.png");
+		loadImage("bullet1", "bullet/bullet_1.png");
+		loadImage("bullet2", "bullet/bullet_2.png");
+		loadImage("bullet3", "bullet/bullet_3.png");
 		// Background
-		loadImage("background1", "background.jpg");
+		loadImage("background", "background.png");
 		// Effects
-		loadImage("explosion", "explosion.gif");
+		//loadImage("explosion", "explosion.gif");
 	}
 	
 	private void preloadSounds() {
