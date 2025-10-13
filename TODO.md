@@ -1,7 +1,6 @@
 # O que será adicionado
 
 ## Essencial para fazer o resto
-- [ ] Adicionar sistema de vidas
 
 ## Extremamente importante para o jogo
 - [ ] Adicionar sistema de *waves*, por tempo

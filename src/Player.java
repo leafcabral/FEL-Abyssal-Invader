@@ -29,7 +29,7 @@ public class Player extends GameObject {
 		this(
 			pos, new Vec2D(75, 75),
 			new Vec2D(0, -1), 500, 
-			img1, Color.GREEN,
+			img, Color.GREEN,
 			5
 		);
 		
@@ -40,7 +40,8 @@ public class Player extends GameObject {
 	public void update(float delta) {
 		if (iFrameSeconds > 0) {
 			iFrameSeconds -= delta;
-		};
+		}
+
 		if (shootTimer > 0) {
 			shootTimer -= delta;
 		}
@@ -95,5 +96,26 @@ public class Player extends GameObject {
 	
 	public void resetShootTimer() {
 		shootTimer = shootDelay;
+	}
+
+	public boolean takeDamage() {
+		if (this.life > 1 && this.iFrameSeconds <= 0) {
+			this.life--;
+			makeInvencible(1);
+			return false;
+		} else if (this.life == 1) {
+			this.life--;
+			return true;
+		}
+
+		return false;
+	}
+
+	public void heal(int lifeToHeal) {
+		this.life += lifeToHeal;
+	}
+
+	public void resetLife() {
+		this.life = 3;
 	}
 }

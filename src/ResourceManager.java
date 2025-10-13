@@ -46,6 +46,8 @@ public class ResourceManager {
 		loadImage("background", "background.png");
 		// Effects
 		//loadImage("explosion", "explosion.gif");
+		// Life
+		loadImage("life", "life.png");
 	}
 	
 	private void preloadSounds() {
