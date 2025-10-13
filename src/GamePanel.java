@@ -61,7 +61,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.resources = new ResourceManager(true);
 		this.graphics = new GraphicsManager(
 			new Vec2D(screenWidth, screenHeight),
-			resources.getImage("background1"),
+			resources.getImage("background"),
 			Color.BLACK
 		);
 		this.input = new InputManager();
@@ -73,7 +73,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		this.player = new Player(
 			new Vec2D(screenWidth / 2, screenHeight - 100),
-			resources.getImage("player")
+			resources.getImage("player1"),
+			resources.getImage("player2"),
+			resources.getImage("player3")
 		);
 		this.player.pos.x -= this.player.size.x/2;
 		this.enemies = new CopyOnWriteArrayList<>();
@@ -114,14 +116,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	}
 
 	private void handlePlayerInput() {
-		float playerVelocity = player.speed * delta;
 		
 		if (input.isActionPressed("moveLeft")) {
-			player.pos.x -= playerVelocity;
+			player.direction.x = -1;
+		} else if (input.isActionPressed("moveRight")) {
+			player.direction.x = 1;
+		} else {
+			player.direction.x = 0;
 		}
-		if (input.isActionPressed("moveRight")) {
-			player.pos.x += playerVelocity;
-		}
+		float velocity = player.speed * delta * player.direction.x;
+		
+		player.update(delta);
+		player.move(velocity);
+		
 		// Se fora, coloca pra dentro
 		player.pos.x = Math.max(0, Math.min(
 			player.pos.x, screenWidth - player.size.x)
@@ -148,7 +155,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		Vec2D pos = new Vec2D();
 		pos.x = random.nextInt(screenWidth - (int)dummyEnemy.size.x);
 		pos.y = -(int)dummyEnemy.size.y;
-		String imgName = "alien" + (random.nextInt(4) + 1);
+		String imgName = "enemy" + (random.nextInt(6) + 1);
 		
 		enemies.add(new Enemy(pos, resources.getImage(imgName)));
 	}
@@ -159,7 +166,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 
 		handlePlayerInput();
-		player.update(delta);
 		
 		// Remove os que sairam da tela
 		bullets.removeIf(bullet -> {

@@ -1,7 +1,5 @@
 # O que será adicionado
 
-Quando menor o nível, maior a prioridade.
-
 ## Essencial para fazer o resto
 
 ## Extremamente importante para o jogo

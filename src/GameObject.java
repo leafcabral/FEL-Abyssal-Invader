@@ -8,7 +8,7 @@ public abstract class GameObject {
 	public Vec2D direction;
 	public float speed;
 	
-	private BufferedImage sprite;
+	public BufferedImage sprite;
 	private Color fallback_color;
 	
 	
@@ -26,11 +26,6 @@ public abstract class GameObject {
 	
 	
 	public abstract void update(float delta);
-	
-	
-	public BufferedImage getSprite() {
-		return sprite;
-	}
 	
 	public void draw(Graphics2D g2) {
 		if (sprite == null) {

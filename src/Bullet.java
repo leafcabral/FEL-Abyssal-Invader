@@ -15,7 +15,7 @@ public class Bullet extends GameObject{
 	
 	public static Bullet newDefaultBullet(Vec2D pos, BufferedImage img) {
 		return new Bullet(
-			pos, new Vec2D(10, 20),
+			pos, new Vec2D(15, 30),
 			new Vec2D(0, -1), 1000,
 			img, Color.YELLOW
 		);
