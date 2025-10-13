@@ -20,7 +20,7 @@ public class Player extends GameObject {
 			pos, new Vec2D(75, 75),
 			new Vec2D(0, -1), 500, 
 			img, Color.GREEN,
-			5
+			3
 		);
 	}
 
@@ -48,14 +48,23 @@ public class Player extends GameObject {
 	}
 
 	public boolean takeDamage() {
-		if (this.life > 0 && this.iFrameSeconds <= 0) {
+		if (this.life > 1 && this.iFrameSeconds <= 0) {
 			this.life--;
 			makeInvencible(1);
 			return false;
-		} else if (this.life == 0) {
+		} else if (this.life == 1) {
+			this.life--;
 			return true;
 		}
 
 		return false;
+	}
+
+	public void heal(int lifeToHeal) {
+		this.life += lifeToHeal;
+	}
+
+	public void resetLife() {
+		this.life = 3;
 	}
 }

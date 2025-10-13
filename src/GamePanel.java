@@ -225,6 +225,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g2.setColor(Color.WHITE);
 		g2.setFont(new Font("Arial", Font.BOLD, 20));
 		g2.drawString("Score: " + score, 10, 25);
+		g2.drawString("Life: " + player.life, 10, screenHeight - 10);
 
 		g2.setFont(new Font("Arial", Font.PLAIN, 15));
 		String exitText = "Pressione ESC para sair";
@@ -250,6 +251,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		player.pos.x = screenWidth / 2 - 25;
 		bullets.clear();
 		enemies.clear();
+		player.resetLife();
 		status = GameStatus.RUNNING;
 	}
 
