@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -196,18 +197,23 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			}
 		}
 
-		bullets.removeAll(bulletsToRemove);
-		enemies.removeAll(enemiesToRemove);
-		
 		for (Enemy enemy : enemies) {
 			if (player.collides(enemy)) {
+				if (player.takeDamage()) {
+					System.out.println("Fim de Jogo!");
+					status = GameStatus.GAME_OVER;
+				}
+				else {
+					enemiesToRemove.add(enemy);
+				}
 				resources.playSound("explosion");
-				System.out.println("Fim de Jogo!");
-				status = GameStatus.GAME_OVER;
 			}
 		}
+
+		bullets.removeAll(bulletsToRemove);
+		enemies.removeAll(enemiesToRemove);
 	}
-	
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -218,8 +224,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 		// Desenhar jogo
 		g2.setColor(Color.WHITE);
-		g2.setFont(new Font("Arial", Font.BOLD, 20));
-		g2.drawString("Score: " + score, 10, 25);
 
 		g2.setFont(new Font("Arial", Font.PLAIN, 15));
 		String exitText = "Pressione ESC para sair";
@@ -229,6 +233,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		graphics.drawObjects(g2, new ArrayList(bullets));
 		graphics.drawObjects(g2, new ArrayList(enemies));
 		graphics.drawObject(g2, player);
+
+		g2.setFont(new Font("Arial", Font.BOLD, 20));
+		g2.drawString("Score: " + score, 10, 80);
+
+		for (int i = player.life, j = 10; i > 0; i--, j += 50) {
+			g2.drawImage(resources.getImage("life"), j, 0, null);
+		}
 
 		// Menu de pause
 		if (status == GameStatus.PAUSED) {
@@ -245,6 +256,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		player.pos.x = screenWidth / 2 - 25;
 		bullets.clear();
 		enemies.clear();
+		player.resetLife();
 		status = GameStatus.RUNNING;
 	}
 
