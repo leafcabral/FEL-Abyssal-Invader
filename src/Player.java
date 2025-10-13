@@ -45,4 +45,17 @@ public class Player extends GameObject {
 	public void resetShootTimer() {
 		shootTimer = shootDelay;
 	}
+
+	public boolean takeDamage() {
+		System.out.println("VIDA: " + this.life);
+		if (this.life > 0 && iFrameSeconds == 0) {
+			this.life -= 1;
+			makeInvencible(3);
+			return false;
+		} else if (this.life == 0) {
+			return true;
+		}
+
+		return false;
+	}
 }
