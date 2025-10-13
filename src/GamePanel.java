@@ -196,19 +196,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			}
 		}
 
-		bullets.removeAll(bulletsToRemove);
-		enemies.removeAll(enemiesToRemove);
-		
 		for (Enemy enemy : enemies) {
 			if (player.collides(enemy)) {
 				if (player.takeDamage()) {
-					System.out.println("HAI GUYS :3");
-					resources.playSound("explosion");
 					System.out.println("Fim de Jogo!");
 					status = GameStatus.GAME_OVER;
 				}
+				else {
+					enemiesToRemove.add(enemy);
+				}
+				resources.playSound("explosion");
 			}
 		}
+
+		bullets.removeAll(bulletsToRemove);
+		enemies.removeAll(enemiesToRemove);
 	}
 	
 	@Override

@@ -28,7 +28,8 @@ public class Player extends GameObject {
 	public void update(float delta) {
 		if (iFrameSeconds > 0) {
 			iFrameSeconds -= delta;
-		};
+		}
+
 		if (shootTimer > 0) {
 			shootTimer -= delta;
 		}
@@ -47,10 +48,9 @@ public class Player extends GameObject {
 	}
 
 	public boolean takeDamage() {
-		System.out.println("VIDA: " + this.life);
-		if (this.life > 0 && iFrameSeconds == 0) {
-			this.life -= 1;
-			makeInvencible(3);
+		if (this.life > 0 && this.iFrameSeconds <= 0) {
+			this.life--;
+			makeInvencible(1);
 			return false;
 		} else if (this.life == 0) {
 			return true;
