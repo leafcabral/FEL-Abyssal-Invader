@@ -7,7 +7,6 @@
 
 ### Problemas
 - Consertar posição de spawn da bala
-- Inimigos pararem de spawnar dentro do outro
 - ...
 
 ### Jogabilidade
