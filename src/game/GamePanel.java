@@ -306,13 +306,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		// Mudar armas
 		if (input.isActionPressed("weapon1")) {
 			player.switchWeapon(Player.WeaponType.DEFAULT);
-			System.out.println(player.getCurrentWeapon().name());
 		} else if (input.isActionPressed("weapon2")) {
 			player.switchWeapon(Player.WeaponType.SHOTGUN); 
-			System.out.println(player.getCurrentWeapon().name());
 		} else if (input.isActionPressed("weapon3")) {
 			player.switchWeapon(Player.WeaponType.BLAST);
-			System.out.println(player.getCurrentWeapon().name());
 		}
 	}
 

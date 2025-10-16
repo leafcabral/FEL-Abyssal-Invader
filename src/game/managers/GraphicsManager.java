@@ -80,8 +80,12 @@ public class GraphicsManager {
 		
 		Vec2D currentPos = new Vec2D(topleft);
 		g2.setColor(Color.WHITE);
-		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-		g2.setComposite(ac);
+		AlphaComposite cooldownAC = AlphaComposite.getInstance(
+			AlphaComposite.SRC_OVER, 0.3f
+		);
+		AlphaComposite defaultAC = AlphaComposite.getInstance(
+			AlphaComposite.SRC_OVER, 1.0f
+		);
 	
 		for (int i = 0; i < 3; i++) {
 			if (player.getCurrentWeapon().ordinal() == i) {
@@ -98,6 +102,7 @@ public class GraphicsManager {
 				null
 			);
 			
+			g2.setComposite(cooldownAC);
 			float scale = player.getWeaponCooldownProgress(WeaponType.values()[i]);
 			int actualY = (int)topleft.y + height - (int)(height*scale);
 			g2.fillRect(
@@ -106,8 +111,8 @@ public class GraphicsManager {
 			);
 			
 			currentPos.x += width + 20;
+			g2.setComposite(defaultAC);
 		}
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
 	}
 	
 	private void drawMenuBox(Graphics2D g2, Vec2D pos, Vec2D size) {
