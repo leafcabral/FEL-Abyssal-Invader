@@ -153,8 +153,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				player.resetShootTimer();
 			}
 		}
-		
-		// TODO: Adicionar mudança de armas
 	}
 	
 	private void spawnEnemy() {
@@ -324,6 +322,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			}
 			
 			menuSelectedOptionIndex = 0;
+		}
+		
+		// Mudar armas
+		if (input.isActionPressed("weapon1")) {
+			player.switchWeapon(Player.WeaponType.DEFAULT);
+			System.out.println(player.getCurrentWeapon().name());
+		} else if (input.isActionPressed("weapon2")) {
+			player.switchWeapon(Player.WeaponType.SHOTGUN); 
+			System.out.println(player.getCurrentWeapon().name());
+		} else if (input.isActionPressed("weapon3")) {
+			player.switchWeapon(Player.WeaponType.BLAST);
+			System.out.println(player.getCurrentWeapon().name());
 		}
 	}
 	
