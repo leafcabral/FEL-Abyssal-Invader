@@ -200,7 +200,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		if (status != GameStatus.RUNNING) {
 			return;
 		}
-
+		
+		graphics.updateBackground(delta);
 		handlePlayerInput();
 		
 		// Remove os que sairam da tela

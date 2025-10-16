@@ -23,20 +23,23 @@ public class GraphicsManager {
 		RESTART,
 		QUIT
 	}
-	
+
 	public final Vec2D screenSize;
 	public final Vec2D screenCenter;
-	
+
 	private final BufferedImage backgroundImage;
+	private final Vec2D bgTrueSize;
 	private final Color backgroundColor;
-	
+	private float backgroundOffset = 0;
+	private final float backgroundSpeed = 100;
+
 	public MenuOption pausedOptions[] = {
 		MenuOption.RESUME, MenuOption.QUIT
 	};
 	public MenuOption gameOverOptions[] = {
 		MenuOption.RESTART, MenuOption.QUIT
 	};
-	
+
 	public GraphicsManager(
 			Vec2D screenSize,
 			BufferedImage backgroundImage, Color backgroundColor
@@ -45,20 +48,53 @@ public class GraphicsManager {
 		this.screenCenter = screenSize.multiply(0.5f);
 		this.backgroundImage = backgroundImage;
 		this.backgroundColor = backgroundColor;
-	}
-	
-	public void drawBackground(Graphics2D g2) {
+
 		if (backgroundImage != null) {
-			g2.drawImage(
-				backgroundImage, 0, 0,
-				(int)screenSize.x, (int)screenSize.y, null
+			float bgHeight = backgroundImage.getHeight();
+			float bgWidth = backgroundImage.getWidth();
+			
+			float aspectRatio = bgHeight / bgWidth;
+			
+			this.bgTrueSize = new Vec2D(
+				screenSize.x,
+				(float)screenSize.x * aspectRatio
 			);
 		} else {
-			g2.setColor(backgroundColor);
-			g2.fillRect(0, 0, (int)screenSize.x, (int)screenSize.y);
+			this.bgTrueSize = new Vec2D(screenSize);
 		}
 	}
-	
+
+	public void updateBackground(float delta) {
+		backgroundOffset += backgroundSpeed * delta;
+
+		if (backgroundOffset >= bgTrueSize.y) {
+			backgroundOffset = 0;
+		}
+	}
+
+	public void drawBackground(Graphics2D g2) {
+		if (backgroundImage == null) {
+			g2.setColor(backgroundColor);
+			g2.fillRect(0, 0, (int)screenSize.x, (int)screenSize.y);
+			return;
+		}
+
+		g2.drawImage(
+			backgroundImage,
+			0, (int) backgroundOffset,
+			(int)bgTrueSize.x, (int)bgTrueSize.y,
+			null
+		);
+		if (backgroundOffset > 0) {
+			g2.drawImage(
+				backgroundImage,
+				0, (int)backgroundOffset - (int)bgTrueSize.y,
+				(int)bgTrueSize.x, (int)bgTrueSize.y,
+				null
+			);
+		}
+	}
+
 	public void drawObject(Graphics2D g2, GameObject obj) {
 		obj.draw(g2);
 	}
@@ -72,20 +108,20 @@ public class GraphicsManager {
 			obj.draw(g2);
 		}
 	}
-	
+
 	public void drawWeapons(Graphics2D g2, Vec2D screenSize,
 			Player player, ResourceManager resources) {
 		int width = 40;
 		int height = width;
 		int spacing = 20;
 		int margin = 20;
-		
+
 		int totalHeight = (height + spacing) * 3 - spacing;
 		Vec2D currentPos = new Vec2D(
 			screenSize.x - width - margin,
 			screenSize.y - totalHeight - margin
 		);
-		
+
 		g2.setColor(Color.WHITE);
 		AlphaComposite cooldownAC = AlphaComposite.getInstance(
 			AlphaComposite.SRC_OVER, 0.3f
@@ -93,7 +129,7 @@ public class GraphicsManager {
 		AlphaComposite defaultAC = AlphaComposite.getInstance(
 			AlphaComposite.SRC_OVER, 1.0f
 		);
-	
+
 		for (int i = 0; i < 3; i++) {
 			if (player.getCurrentWeapon().ordinal() == i) {
 				g2.drawRect(
@@ -101,14 +137,14 @@ public class GraphicsManager {
 					width, height
 				);
 			}
-			
+
 			g2.drawImage(
 				resources.getImage("bulletIcon" + (i+1)),
 				(int)currentPos.x, (int)currentPos.y,
 				width, height,
 				null
 			);
-			
+
 			g2.setComposite(cooldownAC);
 			float scale = player.getWeaponCooldownProgress(WeaponType.values()[i]);
 			int actualY = (int)currentPos.y + height - (int)(height*scale);
@@ -116,30 +152,30 @@ public class GraphicsManager {
 				(int)currentPos.x, actualY,
 				width, (int)(height*scale)
 			);
-			
+
 			currentPos.y += height + spacing;
 			g2.setComposite(defaultAC);
 		}
 	}
-	
+
 	private void drawMenuBox(Graphics2D g2, Vec2D pos, Vec2D size) {
 		g2.setColor(new Color(60, 60, 60));
 		g2.fillRect((int)pos.x, (int)pos.y,(int)size.x, (int)size.y);
-		
+
 		g2.setColor(Color.WHITE);
 		g2.drawRect((int)pos.x, (int)pos.y,(int)size.x, (int)size.y);
 	}
-	
+
 	public void drawGenericMenu(
 			Graphics2D g2, String title,
 			MenuOption options[], int selectedIndex
 	) {
 		g2.setColor(new Color(0, 0, 0, 180));
 		g2.fillRect(0, 0, (int)screenSize.x, (int)screenSize.y);
-		
+
 		// Altura é a mesma
 		Vec2D optionSize = new Vec2D(0, 22);
-		
+
 		Vec2D menuSize = new Vec2D(
 			200, options.length * (optionSize.y+10) + 60
 		);
@@ -147,17 +183,17 @@ public class GraphicsManager {
 			screenCenter.x - menuSize.x / 2,
 			screenCenter.y - menuSize.y / 2
 		);
-		
+
 		drawMenuBox(g2, menuPos, menuSize);
-		
+
 		g2.setFont(new Font("Arial", Font.BOLD, 20));
 		int titleWidth = g2.getFontMetrics().stringWidth(title);
 		g2.drawString(title, (screenSize.x - titleWidth) / 2, menuPos.y + 25);
-		
+
 		g2.setFont(new Font("Arial", Font.PLAIN, 16));
 		for (int i = 0; i < options.length; i++) {
 			MenuOption option = options[i];
-			
+
 			optionSize.x = g2.getFontMetrics().stringWidth(
 				option.name()
 			);
@@ -165,22 +201,22 @@ public class GraphicsManager {
 				screenCenter.x - optionSize.x/2,
 				(int)menuPos.y + 25 + i*(optionSize.y + 5) + 40
 			);
-			
+
 			if (i == selectedIndex) {
 				g2.setColor(Color.WHITE);
 				g2.drawString(">", optionPos.x - 20, optionPos.y);
 			} else {
 				g2.setColor(Color.LIGHT_GRAY);
 			}
-			
+
 			g2.drawString(option.name(), optionPos.x, optionPos.y);
 		}
 	}
-	
+
 	public void drawPauseMenu(Graphics2D g2, int selectedIndex) {
 		drawGenericMenu(g2, "Game Paused", pausedOptions, selectedIndex);
 	}
-	
+
 	public void drawGameOverMenu(Graphics2D g2, int selectedIndex) {
 		drawGenericMenu(g2, "Game Over", gameOverOptions, selectedIndex);
 	}
