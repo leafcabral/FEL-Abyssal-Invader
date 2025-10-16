@@ -16,10 +16,9 @@ public class Player extends GameObject {
 	
 	private WeaponType currentWeapon;
 	private float weaponDelays[] = {0.5f, 1.0f, 2.0f};
+	private float weaponTimers[] = {0, 0, 0};
 	
 	private float iFrameSeconds = 0;
-	private float shootDelay;
-	private float shootTimer = 0;
 	
 	private BufferedImage sprites[];
 	private int imgIndex = 0;
@@ -53,9 +52,12 @@ public class Player extends GameObject {
 			iFrameSeconds -= delta;
 		}
 
-		if (shootTimer > 0) {
-			shootTimer -= delta;
+		for (int i = 0; i < weaponTimers.length; i++) {
+			if (weaponTimers[i] > 0) {
+				weaponTimers[i] -= delta;
+			}
 		}
+		
 		if (direction.x != 0) {
 			if (changeSpriteTimer > 0) {
 				changeSpriteTimer -= delta;
@@ -102,11 +104,14 @@ public class Player extends GameObject {
 	}
 	
 	public Boolean canShoot() {
-		return shootTimer <= 0;
+		return getWeaponTimer() <= 0;
 	}
 	
 	public void resetShootTimer() {
-		shootTimer = shootDelay;
+		setWeaponTimer(weaponDelays[currentWeapon.ordinal()]);
+	}
+	public void clearShootTimer() {
+		setWeaponTimer(0);
 	}
 
 	public boolean takeDamage() {
@@ -130,10 +135,15 @@ public class Player extends GameObject {
 		this.life = 3;
 	}
 	
+	public void setWeaponTimer(float newTime) {
+		weaponTimers[currentWeapon.ordinal()] = newTime;
+	}
+	public float getWeaponTimer() {
+		return weaponTimers[currentWeapon.ordinal()];
+	}
+	
 	public void switchWeapon(WeaponType newWeapon) {
 		this.currentWeapon = newWeapon;
-		// .ordinal() pega o numero do enum, comecando do zero
-		this.shootDelay = weaponDelays[newWeapon.ordinal()];
 	}
 	
 	public WeaponType getCurrentWeapon() {
