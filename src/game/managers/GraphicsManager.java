@@ -2,7 +2,9 @@ package game.managers;
 
 import game.utils.Vec2D;
 import game.entities.*;
+import game.entities.Player.WeaponType;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -69,6 +71,43 @@ public class GraphicsManager {
 		for (GameObject obj : objs) {
 			obj.draw(g2);
 		}
+	}
+	
+	public void drawWeapons(Graphics2D g2, Vec2D topleft,
+			Player player, ResourceManager resources) {
+		int width = 40;
+		int height = width;
+		
+		Vec2D currentPos = new Vec2D(topleft);
+		g2.setColor(Color.WHITE);
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+		g2.setComposite(ac);
+	
+		for (int i = 0; i < 3; i++) {
+			if (player.getCurrentWeapon().ordinal() == i) {
+				g2.drawRect(
+					(int)currentPos.x, (int)topleft.y,
+					width, height
+				);
+			}
+			
+			g2.drawImage(
+				resources.getImage("bulletIcon" + (i+1)),
+				(int)currentPos.x, (int)topleft.y,
+				width, height,
+				null
+			);
+			
+			float scale = player.getWeaponCooldownProgress(WeaponType.values()[i]);
+			int actualY = (int)topleft.y + height - (int)(height*scale);
+			g2.fillRect(
+				(int)currentPos.x, actualY,
+				width, (int)(height*scale)
+			);
+			
+			currentPos.x += width + 20;
+		}
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
 	}
 	
 	private void drawMenuBox(Graphics2D g2, Vec2D pos, Vec2D size) {

@@ -268,8 +268,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g2.setFont(new Font("Arial", Font.BOLD, 20));
 		g2.drawString("Score: " + score, 10, 80);
 
+		graphics.drawWeapons(g2, new Vec2D(10, 100), player, resources);
+		
 		for (int i = player.life, j = 10; i > 0; i--, j += 50) {
-			g2.drawImage(resources.getImage("life"), j, 0, null);
+			g2.drawImage(resources.getImage("life"), j, 10, null);
 		}
 
 		// Menu de pause

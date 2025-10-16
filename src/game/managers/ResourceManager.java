@@ -44,9 +44,9 @@ public class ResourceManager {
 		loadImage("bullet2", "bullet/bullet_2.png");
 		loadImage("bullet3", "bullet/bullet_3.png");
 		// Bullet Icons
-		loadImage("bulletIconDefault", "bullet/icons/default.png");
-		loadImage("bulletIconShotgun", "bullet/icons/shotgun.png");
-		loadImage("bulletIconBlast", "bullet/icons/blast.png");
+		loadImage("bulletIcon1", "bullet/icons/default.png");
+		loadImage("bulletIcon2", "bullet/icons/shotgun.png");
+		loadImage("bulletIcon3", "bullet/icons/blast.png");
 		// Background
 		loadImage("background", "background.png");
 		// Effects
