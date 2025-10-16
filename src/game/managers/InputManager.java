@@ -22,13 +22,13 @@ public class InputManager {
 		
 		// Mudar armas
 		keyBindings.put("weapon1", Set.of(
-			KeyEvent.VK_Z, KeyEvent.VK_P
+			KeyEvent.VK_1, KeyEvent.VK_Z, KeyEvent.VK_P
 		));
 		keyBindings.put("weapon2", Set.of(
-			KeyEvent.VK_X, KeyEvent.VK_O
+			KeyEvent.VK_2, KeyEvent.VK_X, KeyEvent.VK_O
 		));
 		keyBindings.put("weapon3", Set.of(
-			KeyEvent.VK_C, KeyEvent.VK_I
+			KeyEvent.VK_3, KeyEvent.VK_C, KeyEvent.VK_I
 		));
 		
 		// Menu

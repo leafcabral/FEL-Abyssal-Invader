@@ -8,15 +8,21 @@ import java.awt.image.BufferedImage; // Importa para trabalhar com imagens.
 
 
 public class Player extends GameObject {
+	public enum WeaponType {
+		DEFAULT, SHOTGUN, BLAST
+	}
+	
 	public int life;
 	
+	private WeaponType currentWeapon;
+	private float weaponDelays[] = {0.5f, 1.0f, 2.0f};
+	private float weaponTimers[] = {0, 0, 0};
+	
 	private float iFrameSeconds = 0;
-	private final float shootDelay = 0.5f;
-	private float shootTimer = 0;
 	
 	private BufferedImage sprites[];
 	private int imgIndex = 0;
-	private float changeSpriteDelay = 0.1f;
+	private final float changeSpriteDelay = 0.1f;
 	private float changeSpriteTimer = changeSpriteDelay;
 
 	public Player(Vec2D pos, Vec2D size,
@@ -25,6 +31,7 @@ public class Player extends GameObject {
 		      int life) {
 		super(pos, size, direction, speed, sprite, fallback_color);
 		this.life = life;
+		this.switchWeapon(WeaponType.DEFAULT);
 	}
 	public Player(
 			Vec2D pos, BufferedImage img1,
@@ -45,9 +52,12 @@ public class Player extends GameObject {
 			iFrameSeconds -= delta;
 		}
 
-		if (shootTimer > 0) {
-			shootTimer -= delta;
+		for (int i = 0; i < weaponTimers.length; i++) {
+			if (weaponTimers[i] > 0) {
+				weaponTimers[i] -= delta;
+			}
 		}
+		
 		if (direction.x != 0) {
 			if (changeSpriteTimer > 0) {
 				changeSpriteTimer -= delta;
@@ -94,11 +104,14 @@ public class Player extends GameObject {
 	}
 	
 	public Boolean canShoot() {
-		return shootTimer <= 0;
+		return getWeaponTimer() <= 0;
 	}
 	
 	public void resetShootTimer() {
-		shootTimer = shootDelay;
+		setWeaponTimer(weaponDelays[currentWeapon.ordinal()]);
+	}
+	public void clearShootTimer() {
+		setWeaponTimer(0);
 	}
 
 	public boolean takeDamage() {
@@ -120,5 +133,31 @@ public class Player extends GameObject {
 
 	public void resetLife() {
 		this.life = 3;
+	}
+	
+	public void setWeaponTimer(float newTime) {
+		weaponTimers[currentWeapon.ordinal()] = newTime;
+	}
+	public float getWeaponTimer() {
+		return weaponTimers[currentWeapon.ordinal()];
+	}
+	
+	public void switchWeapon(WeaponType newWeapon) {
+		this.currentWeapon = newWeapon;
+	}
+	
+	public WeaponType getCurrentWeapon() {
+		return currentWeapon;
+	}
+	    
+	public float getWeaponCooldown(WeaponType weapon) {
+		return weaponTimers[weapon.ordinal()];
+	}
+
+	public float getWeaponCooldownProgress(WeaponType weapon) {
+		int index = weapon.ordinal();
+		if (weaponTimers[index] <= 0) return 0f;
+			return weaponTimers[index] / weaponDelays[index];
+		}
 	}
 }

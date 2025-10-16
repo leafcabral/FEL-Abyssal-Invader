@@ -40,9 +40,13 @@ public class ResourceManager {
 		loadImage("enemy5", "enemies/enemy5.png");
 		loadImage("enemy6", "enemies/enemy6.png");
 		// Bullets
-		loadImage("bullet1", "bullet/bullet_1.png");
-		loadImage("bullet2", "bullet/bullet_2.png");
-		loadImage("bullet3", "bullet/bullet_3.png");
+		loadImage("bullet1", "bullet/default.png");
+		loadImage("bullet2", "bullet/shotgun.png");
+		loadImage("bullet3", "bullet/blast.png");
+		// Bullet Icons
+		loadImage("bulletIcon1", "bullet/icons/default.png");
+		loadImage("bulletIcon2", "bullet/icons/shotgun.png");
+		loadImage("bulletIcon3", "bullet/icons/blast.png");
 		// Background
 		loadImage("background", "background.png");
 		// Effects

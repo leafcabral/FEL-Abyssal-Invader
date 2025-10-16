@@ -6,6 +6,9 @@ import game.entities.Player;
 import game.managers.GraphicsManager;
 import game.managers.InputManager;
 import game.managers.ResourceManager;
+import static game.entities.Player.WeaponType.*;
+
+
 import game.utils.Vec2D;
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -21,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.time.Instant;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public enum GameStatus {
@@ -138,21 +142,38 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			player.pos.x, screenWidth - player.size.x)
 		);
 		
-		if (input.isActionPressed("shoot")) {
-			if (player.canShoot()) {
-				bullets.add(Bullet.newDefaultBullet(
-					player.getCenter().add(
-						new Vec2D(0, -player.size.y)
-					),
-					resources.getImage("bullet1")
-				));
-				resources.playSound("shot");
-				
-				player.resetShootTimer();
+		if (input.isActionPressed("shoot") && player.canShoot()) {
+			Vec2D bulletPos = new Vec2D(
+				player.getCenter().x - dummyBullet.size.x / 2,
+				player.pos.y - dummyBullet.size.y + 15
+			);
+			switch (player.getCurrentWeapon()) {
+				case DEFAULT:
+					bullets.add(Bullet.newDefaultBullet(
+						bulletPos,
+						resources.getImage("bullet1")
+					));
+					break;
+				case SHOTGUN:
+					Collections.addAll(
+						bullets,
+						Bullet.newShotgunBullets(
+							bulletPos,
+							resources.getImage("bullet2")
+						)
+					);
+					break;
+				case BLAST:
+					bullets.add(Bullet.newBlastBullet(
+						bulletPos,
+						resources.getImage("bullet3")
+					));
+					break;
+					
 			}
+			resources.playSound("shot");
+			player.resetShootTimer();
 		}
-		
-		// TODO: Adicionar mudança de armas
 	}
 	
 	private void spawnEnemy() {
@@ -258,8 +279,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g2.setFont(new Font("Arial", Font.BOLD, 20));
 		g2.drawString("Score: " + score, 10, 80);
 
+		graphics.drawWeapons(g2, new Vec2D(10, 100), player, resources);
+		
 		for (int i = player.life, j = 10; i > 0; i--, j += 50) {
-			g2.drawImage(resources.getImage("life"), j, 0, null);
+			g2.drawImage(resources.getImage("life"), j, 10, null);
 		}
 
 		// Menu de pause
@@ -290,6 +313,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		// Só deve checar quando clicar, e não todo frame
 		handleMenuInput();
+		
+		// Mudar armas
+		if (input.isActionPressed("weapon1")) {
+			player.switchWeapon(Player.WeaponType.DEFAULT);
+		} else if (input.isActionPressed("weapon2")) {
+			player.switchWeapon(Player.WeaponType.SHOTGUN); 
+		} else if (input.isActionPressed("weapon3")) {
+			player.switchWeapon(Player.WeaponType.BLAST);
+		}
 	}
 
 	private void handleMenuInput() {
