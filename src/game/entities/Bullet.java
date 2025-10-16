@@ -24,4 +24,31 @@ public class Bullet extends GameObject{
 			img, Color.YELLOW
 		);
 	}
+	
+	public static Bullet[] newShotgunBullets(Vec2D pos, BufferedImage img) {
+		Bullet bullets[] = new Bullet[3];
+		Vec2D directions[] = {
+			new Vec2D(-0.5f, -1),
+			new Vec2D(0, -1),
+			new Vec2D(0.5f, -1)
+		};
+		
+		for (int i = 0; i < bullets.length; i++) {
+			bullets[i] = new Bullet(
+				pos, new Vec2D(15, 30),
+				directions[i], 1000,
+				img, Color.GREEN
+			);
+		}
+		
+		return bullets;
+	}
+	
+	public static Bullet newBlastBullet(Vec2D pos, BufferedImage img) {
+		return new Bullet(
+			pos.add(-50), new Vec2D(45, 90),
+			new Vec2D(0, -1), 700,
+			img, Color.GREEN
+		);
+	}
 }

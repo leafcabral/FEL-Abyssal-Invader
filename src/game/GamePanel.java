@@ -6,6 +6,9 @@ import game.entities.Player;
 import game.managers.GraphicsManager;
 import game.managers.InputManager;
 import game.managers.ResourceManager;
+import static game.entities.Player.WeaponType.*;
+
+
 import game.utils.Vec2D;
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -21,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.time.Instant;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public enum GameStatus {
@@ -138,20 +142,37 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			player.pos.x, screenWidth - player.size.x)
 		);
 		
-		if (input.isActionPressed("shoot")) {
-			if (player.canShoot()) {
-				Vec2D bulletPos = new Vec2D(
-					player.getCenter().x - dummyBullet.size.x / 2,
-					player.pos.y - dummyBullet.size.y + 15
-				);
-				bullets.add(Bullet.newDefaultBullet(
-					bulletPos,
-					resources.getImage("bullet1")
-				));
-				resources.playSound("shot");
-				
-				player.resetShootTimer();
+		if (input.isActionPressed("shoot") && player.canShoot()) {
+			Vec2D bulletPos = new Vec2D(
+				player.getCenter().x - dummyBullet.size.x / 2,
+				player.pos.y - dummyBullet.size.y + 15
+			);
+			switch (player.getCurrentWeapon()) {
+				case DEFAULT:
+					bullets.add(Bullet.newDefaultBullet(
+						bulletPos,
+						resources.getImage("bullet1")
+					));
+					break;
+				case SHOTGUN:
+					Collections.addAll(
+						bullets,
+						Bullet.newShotgunBullets(
+							bulletPos,
+							resources.getImage("bullet2")
+						)
+					);
+					break;
+				case BLAST:
+					bullets.add(Bullet.newBlastBullet(
+						bulletPos,
+						resources.getImage("bullet3")
+					));
+					break;
+					
 			}
+			resources.playSound("shot");
+			player.resetShootTimer();
 		}
 	}
 	
@@ -279,6 +300,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		// Só deve checar quando clicar, e não todo frame
 		handleMenuInput();
+		
+		// Mudar armas
+		if (input.isActionPressed("weapon1")) {
+			player.switchWeapon(Player.WeaponType.DEFAULT);
+			System.out.println(player.getCurrentWeapon().name());
+		} else if (input.isActionPressed("weapon2")) {
+			player.switchWeapon(Player.WeaponType.SHOTGUN); 
+			System.out.println(player.getCurrentWeapon().name());
+		} else if (input.isActionPressed("weapon3")) {
+			player.switchWeapon(Player.WeaponType.BLAST);
+			System.out.println(player.getCurrentWeapon().name());
+		}
 	}
 
 	private void handleMenuInput() {
@@ -322,18 +355,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			}
 			
 			menuSelectedOptionIndex = 0;
-		}
-		
-		// Mudar armas
-		if (input.isActionPressed("weapon1")) {
-			player.switchWeapon(Player.WeaponType.DEFAULT);
-			System.out.println(player.getCurrentWeapon().name());
-		} else if (input.isActionPressed("weapon2")) {
-			player.switchWeapon(Player.WeaponType.SHOTGUN); 
-			System.out.println(player.getCurrentWeapon().name());
-		} else if (input.isActionPressed("weapon3")) {
-			player.switchWeapon(Player.WeaponType.BLAST);
-			System.out.println(player.getCurrentWeapon().name());
 		}
 	}
 	
