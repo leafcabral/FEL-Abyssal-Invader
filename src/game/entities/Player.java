@@ -160,3 +160,4 @@ public class Player extends GameObject {
 			return weaponTimers[index] / weaponDelays[index];
 		}
 	}
+}

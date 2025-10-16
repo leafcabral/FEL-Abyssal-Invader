@@ -181,8 +181,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		pos.x = random.nextInt(screenWidth - (int)dummyEnemy.size.x);
 		pos.y = -(int)dummyEnemy.size.y;
 		String imgName = "enemy" + (random.nextInt(6) + 1);
-		
-		enemies.add(new Enemy(pos, resources.getImage(imgName)));
+		boolean canSpawn = true;
+
+		Enemy enemy = new Enemy(pos, resources.getImage(imgName));
+
+		for (Enemy enemyListed : enemies) {
+			if (enemy.collides(enemyListed)) {
+				canSpawn = false;
+				break;
+			}
+		}
+
+		if (canSpawn) enemies.add(enemy);
+		else spawnEnemy();
 	}
 	
 	public void update() {

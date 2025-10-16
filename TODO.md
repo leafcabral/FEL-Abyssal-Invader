@@ -1,9 +1,11 @@
+# Bugs conhecidos
+- A animação de explosão dos inimigos acaba repetindo alguns frames da explosão anterior/reiniciando logo após o fim
+
 # O que será adicionado
 
 ## Necessário até dia 20/10
 
 ### Problemas
-- Inimigos pararem de spawnar dentro do outro
 - ...
 
 ### Jogabilidade
