@@ -1,28 +1,45 @@
 # O que será adicionado
 
-## Essencial para fazer o resto
+## Necessário até dia 20/10
 
-## Extremamente importante para o jogo
-- [ ] Adicionar sistema de *waves*, por tempo
-- [ ] Adicionar menu de pause e game over
-- [ ] Jogador vira um pouco quando se movimenta
-- [ ] Inimigos pararem de spawnar dentro do outro
-- [ ] Melhorar HUD (vidas, armas, controles)
+### Problemas
+- Consertar posição de spawn da bala
+- Inimigos pararem de spawnar dentro do outro
+- ...
 
-## Se não ter vai ser ruim
-- [ ] Fundo que se move
-- [ ] Sprites com mesmo *pixel-size*
-- [ ] Adicionar efeitos de explosão quando inimigos morrem
-- [ ] Adicionar menu inicial
+### Jogabilidade
+- Implementar sistema de *waves* (por tempo)
+- Fazer waves seguintes terem mais tipos de inimigos
+- **melhorar:** Jogador vira um pouco quando se movimenta
+- Tipos de armas:
+	- Normal
+	- Shotgun
+	- Blast 
+- Jogador pode trocar de armas
+- Inimigos com especiais:
+	- Zig-zag
+	- Atira
+	- Mais rápido
+	- Mais forte
+- ...
+
+### Gráficos
+- Retirar "Pressione ESC para sair"
+- Melhorar onde apareçe a pontuação
+- Mostrar delay de cada arma
+- Adicionar Menu Principal
+- Mostar controles no menu principal e no de pause
+- Melhorar menu de pause e game over
+- Fundo se move pra baixo
+- Adicionar efeitos de explosão quando inimigos morrem
+- Inimigos com animação
+- ...
+
+### Manutenção
+- ...
 
 ## Só se sobrar tmepo
-- [ ] Inimigos com especiais(rápido, atira, explode, divide em dois)
-- [ ] Adicionar novas tipos de munição (shotgun e blast)
-- [ ] Fundo do planeta após *wave* final
-- [ ] Adicionar chefão após *wave* final
-- [ ] Jogador resgata tesouro do planeta após derrotar chefe
 
-## Não precisa
-- [ ] Nebula de fundo ficar mais densa a cada wave
-- [ ] Clique duplo para girar e mover rápido
-- [ ] Melhorar gráfico padrão no caso de fallback
+### Extras
+- Melhorar gráfico padrão no caso de fallback
+- Adicionar chefão após *N* waves
