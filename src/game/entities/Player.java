@@ -1,3 +1,7 @@
+package game.entities;
+
+import game.utils.Vec2D;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -29,7 +33,7 @@ public class Player extends GameObject {
 		this(
 			pos, new Vec2D(75, 75),
 			new Vec2D(0, -1), 500, 
-			img, Color.GREEN,
+			img1, Color.GREEN,
 			5
 		);
 		

@@ -1,3 +1,7 @@
+package game.entities;
+
+import game.utils.Vec2D;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 

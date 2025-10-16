@@ -1,7 +1,6 @@
-// Importa a biblioteca do Swing para criar a janela do jogo.
 import javax.swing.JFrame;
+import game.GamePanel;
 
-// A classe principal que roda o jogo.
 public class Main {
 	public static void main(String[] args) {
 		// 1. Cria a janela do jogo.

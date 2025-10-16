@@ -1,3 +1,7 @@
+package game.managers;
+
+import game.utils.Vec2D;
+import game.entities.*;
 
 import java.awt.Color;
 import java.awt.Font;

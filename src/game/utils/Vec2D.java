@@ -1,3 +1,5 @@
+package game.utils;
+
 public class Vec2D {
 	public float x, y;
 	

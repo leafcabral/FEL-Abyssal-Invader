@@ -1,22 +1,26 @@
+package game;
+
+import game.entities.Bullet;
+import game.entities.Enemy;
+import game.entities.Player;
+import game.managers.GraphicsManager;
+import game.managers.InputManager;
+import game.managers.ResourceManager;
+import game.utils.Vec2D;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Iterator;
 import java.util.Random;
 import java.awt.Font;
-import java.awt.image.BufferedImage; // Importa para trabalhar com imagens.
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import java.time.Instant;
 import java.time.Duration;
 import java.util.ArrayList;
-import javax.swing.JButton;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public enum GameStatus {
