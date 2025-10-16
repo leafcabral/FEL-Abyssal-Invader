@@ -20,8 +20,6 @@
 - ...
 
 ### Gráficos
-- Retirar "Pressione ESC para sair"
-- Melhorar onde apareçe a pontuação
 - Adicionar Menu Principal
 - Mostar controles no menu principal e no de pause
 - Melhorar menu de pause e game over

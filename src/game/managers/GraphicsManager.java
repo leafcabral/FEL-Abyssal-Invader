@@ -73,12 +73,19 @@ public class GraphicsManager {
 		}
 	}
 	
-	public void drawWeapons(Graphics2D g2, Vec2D topleft,
+	public void drawWeapons(Graphics2D g2, Vec2D screenSize,
 			Player player, ResourceManager resources) {
 		int width = 40;
 		int height = width;
+		int spacing = 20;
+		int margin = 20;
 		
-		Vec2D currentPos = new Vec2D(topleft);
+		int totalHeight = (height + spacing) * 3 - spacing;
+		Vec2D currentPos = new Vec2D(
+			screenSize.x - width - margin,
+			screenSize.y - totalHeight - margin
+		);
+		
 		g2.setColor(Color.WHITE);
 		AlphaComposite cooldownAC = AlphaComposite.getInstance(
 			AlphaComposite.SRC_OVER, 0.3f
@@ -90,27 +97,27 @@ public class GraphicsManager {
 		for (int i = 0; i < 3; i++) {
 			if (player.getCurrentWeapon().ordinal() == i) {
 				g2.drawRect(
-					(int)currentPos.x, (int)topleft.y,
+					(int)currentPos.x, (int)currentPos.y,
 					width, height
 				);
 			}
 			
 			g2.drawImage(
 				resources.getImage("bulletIcon" + (i+1)),
-				(int)currentPos.x, (int)topleft.y,
+				(int)currentPos.x, (int)currentPos.y,
 				width, height,
 				null
 			);
 			
 			g2.setComposite(cooldownAC);
 			float scale = player.getWeaponCooldownProgress(WeaponType.values()[i]);
-			int actualY = (int)topleft.y + height - (int)(height*scale);
+			int actualY = (int)currentPos.y + height - (int)(height*scale);
 			g2.fillRect(
 				(int)currentPos.x, actualY,
 				width, (int)(height*scale)
 			);
 			
-			currentPos.x += width + 20;
+			currentPos.y += height + spacing;
 			g2.setComposite(defaultAC);
 		}
 	}

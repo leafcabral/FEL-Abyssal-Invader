@@ -260,6 +260,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
+		Vec2D screenVec = new Vec2D(screenWidth, screenHeight);
 
 		// Desenhar fundo
 		graphics.drawBackground(g2);
@@ -267,19 +268,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		// Desenhar jogo
 		g2.setColor(Color.WHITE);
 
-		g2.setFont(new Font("Arial", Font.PLAIN, 15));
-		String exitText = "Pressione ESC para sair";
-		int exitTextWidth = g2.getFontMetrics().stringWidth(exitText);
-		g2.drawString(exitText, screenWidth - exitTextWidth - 10, 20);
-
 		graphics.drawObjects(g2, new ArrayList(bullets));
 		graphics.drawObjects(g2, new ArrayList(enemies));
 		graphics.drawObject(g2, player);
+		
+		g2.setFont(new Font("Arial", Font.BOLD, 32));
+		String scoreText = Integer.toString(score);
+		int textWidth = g2.getFontMetrics().stringWidth(scoreText);
+		g2.drawString(scoreText, (screenWidth - textWidth) / 2, 40);
 
-		g2.setFont(new Font("Arial", Font.BOLD, 20));
-		g2.drawString("Score: " + score, 10, 80);
-
-		graphics.drawWeapons(g2, new Vec2D(10, 100), player, resources);
+		graphics.drawWeapons(g2, screenVec, player, resources);
 		
 		for (int i = player.life, j = 10; i > 0; i--, j += 50) {
 			g2.drawImage(resources.getImage("life"), j, 10, null);
