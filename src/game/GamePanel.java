@@ -140,10 +140,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		if (input.isActionPressed("shoot")) {
 			if (player.canShoot()) {
+				Vec2D bulletPos = new Vec2D(
+					player.getCenter().x - dummyBullet.size.x / 2,
+					player.pos.y - dummyBullet.size.y + 15
+				);
 				bullets.add(Bullet.newDefaultBullet(
-					player.getCenter().add(
-						new Vec2D(0, -player.size.y)
-					),
+					bulletPos,
 					resources.getImage("bullet1")
 				));
 				resources.playSound("shot");
