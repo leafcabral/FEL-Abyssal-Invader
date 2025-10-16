@@ -149,4 +149,14 @@ public class Player extends GameObject {
 	public WeaponType getCurrentWeapon() {
 		return currentWeapon;
 	}
-}
+	    
+	public float getWeaponCooldown(WeaponType weapon) {
+		return weaponTimers[weapon.ordinal()];
+	}
+
+	public float getWeaponCooldownProgress(WeaponType weapon) {
+		int index = weapon.ordinal();
+		if (weaponTimers[index] <= 0) return 0f;
+			return weaponTimers[index] / weaponDelays[index];
+		}
+	}

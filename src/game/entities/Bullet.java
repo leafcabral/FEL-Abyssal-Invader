@@ -48,7 +48,7 @@ public class Bullet extends GameObject{
 		return new Bullet(
 			pos.add(-50), new Vec2D(45, 90),
 			new Vec2D(0, -1), 700,
-			img, Color.GREEN
+			img, Color.BLUE
 		);
 	}
 }
