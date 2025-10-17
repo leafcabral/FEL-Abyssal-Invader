@@ -41,6 +41,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private Instant lastFrameTime;
 	private float delta = 0;
 	private int score = 0;
+	private int best = 0;
 
 	private Thread gameThread;
 	private final Random random;
@@ -235,6 +236,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 					enemiesToRemove.add(enemy);
 					resources.playSound("explosion");
 					score += 10;
+					if(best<=score){
+						best=score;
+					}
 					break;
 				}
 			}
@@ -275,8 +279,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		g2.setFont(new Font("Arial", Font.BOLD, 32));
 		String scoreText = Integer.toString(score);
+		String bestr = Integer.toString(best);
+		String bestText = "BEST:"+bestr;
 		int textWidth = g2.getFontMetrics().stringWidth(scoreText);
 		g2.drawString(scoreText, (screenWidth - textWidth) / 2, 40);
+		int bestWidth = g2.getFontMetrics().stringWidth(bestText);
+		g2.drawString(bestText, (screenWidth-bestWidth-20),40);
+
 
 		graphics.drawWeapons(g2, screenVec, player, resources);
 		
