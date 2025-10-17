@@ -115,8 +115,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	
 	@Override
 	public void run() {
-		this.status = GameStatus.RUNNING;
-		
 		while (gameThread != null) {
 			updateDelta();
 			update();
@@ -299,6 +297,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		} else if (status == GameStatus.GAME_OVER) {
 			graphics.drawGameOverMenu(g2, menuSelectedOptionIndex);
 		}
+                
+        // Menu principal
+        if (status == GameStatus.MAIN_MENU) {
+            graphics.drawMainMenu(g2, menuSelectedOptionIndex, delta);
+        }
 
 		g2.dispose();
 	}
@@ -365,11 +368,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			switch (status) {
 				case GameStatus.PAUSED -> option = graphics.pausedOptions[menuSelectedOptionIndex];
 				case GameStatus.GAME_OVER -> option = graphics.gameOverOptions[menuSelectedOptionIndex];
+                                case GameStatus.MAIN_MENU -> option = graphics.mainMenuOptions[menuSelectedOptionIndex];
 			}
 			switch (option) {
 				case GraphicsManager.MenuOption.RESUME -> status = GameStatus.RUNNING;
 				case GraphicsManager.MenuOption.RESTART -> resetGame();
 				case GraphicsManager.MenuOption.QUIT -> System.exit(0);
+                                case GraphicsManager.MenuOption.START -> status = GameStatus.RUNNING;
 			}
 			
 			menuSelectedOptionIndex = 0;
