@@ -33,7 +33,7 @@ public class InputManager {
 		
 		// Menu
 		keyBindings.put("menu", Set.of(
-			KeyEvent.VK_ESCAPE, KeyEvent.VK_P
+			KeyEvent.VK_ESCAPE
 		));
 		keyBindings.put("up", Set.of(
 			KeyEvent.VK_W, KeyEvent.VK_UP
