@@ -42,6 +42,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private float delta = 0;
 	private int score = 0;
 	private int best = 0;
+ private int wave = 1;
+ private final float WAVE_DEFAULT_DURATION = 30f;
+ private float waveTime = WAVE_DEFAULT_DURATION;
+ private long startTime;
 
 	private Thread gameThread;
 	private final Random random;
@@ -116,6 +120,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	@Override
 	public void run() {
 		this.status = GameStatus.RUNNING;
+  this.startTime = System.nanoTime();
 		
 		while (gameThread != null) {
 			updateDelta();
@@ -222,6 +227,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			nextSpawnTime = random.nextFloat() + 0.5f;
 		}
 
+  waveTime -= delta;
+
+  if (waveTime <= 0) {
+    wave++;
+    waveTime = WAVE_DEFAULT_DURATION;
+  }
+
 		checkCollisions();
 	}
 
@@ -285,6 +297,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g2.drawString(scoreText, (screenWidth - textWidth) / 2, 40);
 		int bestWidth = g2.getFontMetrics().stringWidth(bestText);
 		g2.drawString(bestText, (screenWidth-bestWidth-20),40);
+  g2.setFont(new Font("Arial", Font.BOLD, 32));
+  
 
 
 		graphics.drawWeapons(g2, screenVec, player, resources);
@@ -380,4 +394,5 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		input.keyReleased(e.getKeyCode());
 	}
+
 }
