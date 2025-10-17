@@ -21,7 +21,8 @@ public class GraphicsManager {
 	public enum MenuOption {
 		RESUME,
 		RESTART,
-		QUIT
+		QUIT,
+                START
 	}
 
 	public final Vec2D screenSize;
@@ -39,6 +40,9 @@ public class GraphicsManager {
 	public MenuOption gameOverOptions[] = {
 		MenuOption.RESTART, MenuOption.QUIT
 	};
+    public MenuOption mainMenuOptions[] = {
+        MenuOption.START, MenuOption.QUIT
+    };
 
 	public GraphicsManager(
 			Vec2D screenSize,
@@ -175,7 +179,7 @@ public class GraphicsManager {
 
 		// Altura é a mesma
 		Vec2D optionSize = new Vec2D(0, 22);
-
+                
 		Vec2D menuSize = new Vec2D(
 			200, options.length * (optionSize.y+10) + 60
 		);
@@ -220,4 +224,55 @@ public class GraphicsManager {
 	public void drawGameOverMenu(Graphics2D g2, int selectedIndex) {
 		drawGenericMenu(g2, "Game Over", gameOverOptions, selectedIndex);
 	}
+        
+    public void drawMainMenu(Graphics2D g2, int selectedIndex, float delta) {
+		MenuOption options[] = mainMenuOptions;
+
+        g2.setColor(Color.WHITE);
+		g2.fillRect(0, 0, (int)screenSize.x, (int)screenSize.y);
+
+		Vec2D optionSize = new Vec2D(0, 22);
+                
+		Vec2D menuSize = new Vec2D(
+			screenSize.x, screenSize.y
+		);
+		Vec2D menuPos = new Vec2D(
+			screenCenter.x - menuSize.x / 2,
+			screenCenter.y - menuSize.y / 2
+		);
+
+		drawBackground(g2);
+		updateBackground((float)0.00001);
+
+		g2.setFont(new Font("Arial", Font.BOLD, 100));
+		int titleWidth = g2.getFontMetrics().stringWidth("FEL");
+		g2.drawString("FEL", (screenSize.x - titleWidth) / 2, menuPos.y + 125);
+
+
+		g2.setFont(new Font("Arial", Font.BOLD, 60));
+		titleWidth = g2.getFontMetrics().stringWidth("The Space Invader");
+		g2.drawString("The Space Invader", (screenSize.x - titleWidth) / 2, menuPos.y + 200);
+
+		g2.setFont(new Font("Arial", Font.PLAIN, 40));
+		for (int i = 0; i < options.length; i++) {
+			MenuOption option = options[i];
+
+			optionSize.x = g2.getFontMetrics().stringWidth(
+				option.name()
+			);
+			Vec2D optionPos = new Vec2D(
+				screenCenter.x - optionSize.x/2,
+				screenCenter.y + 25 + i*(optionSize.y + 25)
+			);
+
+			if (i == selectedIndex) {
+				g2.setColor(Color.WHITE);
+				g2.drawString(">", optionPos.x - 40, optionPos.y);
+			} else {
+				g2.setColor(Color.LIGHT_GRAY);
+			}
+
+			g2.drawString(option.name(), optionPos.x, optionPos.y);
+		}
+    }
 }
