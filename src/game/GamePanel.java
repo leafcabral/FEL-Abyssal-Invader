@@ -209,7 +209,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			return;
 		}
 		
-		//graphics.updateBackground(delta);
+		graphics.updateBackground(delta);
 		handlePlayerInput();
 		
 		// Remove os que sairam da tela
@@ -304,7 +304,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		int waveTextHeight = g2.getFontMetrics().getHeight();
 		g2.drawString(waveText, (screenWidth - textWidth) / 2, 40 + waveTextHeight);
 
-		//graphics.drawWeapons(g2, screenVec, player, resources);
+		graphics.drawWeapons(g2, screenVec, player, resources);
 		
 		for (int i = player.life, j = 10; i > 0; i--, j += 50) {
 			g2.drawImage(resources.getImage("life"), j, 10, null);
