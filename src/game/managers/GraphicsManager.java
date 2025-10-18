@@ -95,17 +95,17 @@ public class GraphicsManager {
 		}
 	}
 
-	public void drawObject(Graphics2D g2, GameObject obj) {
-		obj.draw(g2);
+	public void drawObject(Graphics2D g2, Entity obj) {
+		obj._draw(g2);
 	}
-	public void drawObjects(Graphics2D g2, GameObject objs[]) {
-		for (GameObject obj : objs) {
-			obj.draw(g2);
+	public void drawObjects(Graphics2D g2, Entity objs[]) {
+		for (var obj : objs) {
+			obj._draw(g2);
 		}
 	}
-	public void drawObjects(Graphics2D g2, ArrayList<GameObject> objs) {
-		for (GameObject obj : objs) {
-			obj.draw(g2);
+	public void drawObjects(Graphics2D g2, ArrayList<Entity> objs) {
+		for (var obj : objs) {
+			obj._draw(g2);
 		}
 	}
 
@@ -180,12 +180,12 @@ public class GraphicsManager {
 			AlphaComposite.SRC_OVER, 1.0f
 		);
 		
-		for (int i = 0; i < player.getCurrentLife(); i++) {
+		for (int i = 0; i < player.life; i++) {
 			g2.drawImage(full, posx, posy, sizex, sizey, null);
 			posx += incrementx;
 		}
 		g2.setComposite(emptyAC);
-		for (int i = player.getCurrentLife(); i < player.getMaxLife(); i++) {
+		for (float i = player.life; i < player.maxLife; i++) {
 			g2.drawImage(empty, posx, posy, sizex, sizey, null);
 			posx += incrementx;
 		}

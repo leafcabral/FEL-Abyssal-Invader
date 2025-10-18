@@ -14,6 +14,7 @@ public class Entity extends Node2D {
 	public float maxLife;
 	public float life;
 	private float iFrameSeconds = 0;
+	public float iFrameDelay = 0;
 
 	public Entity(
 			Vec2D position,
@@ -34,6 +35,7 @@ public class Entity extends Node2D {
 	public Entity(Vec2D position, Vec2D size, BufferedImage texture, Color color, float life) {
 		super(position);
 		
+		this.movement = new Movement2D();
 		this.collision = new CollisionShape2D(size);
 		
 		Vec2D spriteSize = new Vec2D(texture.getWidth(), texture.getHeight());
@@ -73,12 +75,14 @@ public class Entity extends Node2D {
 			sprite.direction = new Vec2D(this.direction);
 		}
 	}
-		
-	public void takeDamage(int damage) {
-		if (iFrameSeconds <= 0) {
-			this.life -= damage;
-			if (this.life < 0) { this.life = 0; }
-		}
+
+	public boolean takeDamage(int damage) {
+		if (this.isInvincible()) { return false; }
+
+		life -= damage;
+		if (this.life < 0) { this.life = 0; }
+		setInvincible(iFrameDelay);
+		return life <= 0;
 	}
 	
 	public void setInvincible(float seconds) {

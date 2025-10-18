@@ -11,6 +11,10 @@ public class Movement2D extends Node2D {
 		this.direction = new Vec2D(direction);
 		this.speed = speed;
 	}
+	public Movement2D() {
+		this.direction = new Vec2D(0,0);
+		this.speed = 0;
+	}
 	
 	@Override
 	public void _process(float delta) {

@@ -93,14 +93,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			resources.getImage("player-moving-1.png"),
 			resources.getImage("player-moving-2.png")
 		);
-		this.player.pos.x -= this.player.size.x/2;
+		this.player.position.x -= this.player.sprite.size.x / 2;
+		this.player.iFrameDelay = 1f;
 		this.enemies = new CopyOnWriteArrayList<>();
 		this.bullets = new CopyOnWriteArrayList<>();
 		
 		dummyEnemy = new Enemy(
 			new Vec2D(screenWidth, screenHeight),
 			resources.getImage("enemy-1.png"),
-			MovementPattern.newStraight(100)
+			MovementPattern.newStraight(100),
+			1
 		);
 		dummyBullet = Bullet.newDefaultBullet(
 			new Vec2D(screenWidth, screenHeight),
@@ -133,7 +135,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 	}
 
-	private void handlePlayerInput() {
+	private void handlePlayerProcess() {
 		
 		if (input.isActionPressed("moveLeft")) {
 			player.direction.x = -1;
@@ -142,20 +144,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		} else {
 			player.direction.x = 0;
 		}
-		float velocity = player.speed * delta * player.direction.x;
 		
-		player.update(delta);
-		player.move(velocity);
+		player._process(delta);
 		
 		// Se fora, coloca pra dentro
-		player.pos.x = Math.max(0, Math.min(
-			player.pos.x, screenWidth - player.size.x)
+		player.position.x = Math.max(0, Math.min(
+			player.position.x, screenWidth - player.sprite.size.x)
 		);
 		
 		if (input.isActionPressed("shoot") && player.canShoot()) {
 			Vec2D bulletPos = new Vec2D(
-				player.getCenter().x - dummyBullet.size.x / 2,
-				player.pos.y - dummyBullet.size.y + 15
+				player.sprite.getCenter().x - dummyBullet.sprite.size.x / 2,
+				player.position.y - dummyBullet.sprite.size.y + 15
 			);
 			switch (player.getCurrentWeapon()) {
 				case DEFAULT:
@@ -188,8 +188,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	
 	private void spawnEnemy() {
 		Vec2D pos = new Vec2D();
-		pos.x = random.nextInt(screenWidth - (int)dummyEnemy.size.x);
-		pos.y = -(int)dummyEnemy.size.y;
+		pos.x = random.nextInt(screenWidth - (int)dummyEnemy.sprite.size.x);
+		pos.y = -(int)dummyEnemy.sprite.size.y;
 		String imgName = "enemy-" + (random.nextInt(6) + 1) + ".png";
 		boolean canSpawn = true;
 
@@ -200,17 +200,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		} else {
 			pattern = MovementPattern.newWave(50, 1f, 3f);
 		}
-		Enemy enemy = new Enemy(pos, resources.getImage(imgName), pattern);
+		Enemy enemy = new Enemy(pos, resources.getImage(imgName), pattern, 1);
 
 		for (Enemy enemyListed : enemies) {
-			if (enemy.collides(enemyListed)) {
+			if (enemy.collidesWith(enemyListed)) {
 				canSpawn = false;
 				break;
 			}
 		}
-
-		if (canSpawn) enemies.add(enemy);
-		else spawnEnemy();
+		
+		enemy.iFrameDelay = 0.5f;
+	
+		if (canSpawn) { enemies.add(enemy); }
+		else { spawnEnemy(); }
 	}
 	
 	public void update() {
@@ -219,16 +221,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 		
 		graphics.updateBackground(delta);
-		handlePlayerInput();
+		handlePlayerProcess();
 		
 		// Remove os que sairam da tela
 		bullets.removeIf(bullet -> {
-			bullet.update(delta);
-			return bullet.pos.y < 0; 
+			bullet._process(delta);
+			return bullet.position.y < 0; 
 		});
 		enemies.removeIf(enemy -> {
-			enemy.update(delta);
-			return enemy.pos.y > screenHeight;
+			enemy._process(delta);
+			return enemy.position.y > screenHeight;
 		});
 		
 		// Cria novo inimigo
@@ -254,7 +256,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		for (Bullet bullet : bullets) {
 			for (Enemy enemy : enemies) {
-				if (bullet.collides(enemy)) {
+				if (bullet.collidesWith(enemy)) {
 					bulletsToRemove.add(bullet);
 					enemiesToRemove.add(enemy);
 					resources.playSound("explosion.wav");
@@ -268,8 +270,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 
 		for (Enemy enemy : enemies) {
-			if (player.collides(enemy)) {
-				if (player.takeDamage()) {
+			if (player.collidesWith(enemy)) {
+				if (player.takeDamage(1)) {
 					System.out.println("Fim de Jogo!");
 					status = GameStatus.GAME_OVER;
 				}
@@ -329,7 +331,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 	private void resetGame() {
 		score = 0;
-		player.pos.x = screenWidth / 2 - 25;
+		player.position.x = screenWidth / 2 - 25;
 		bullets.clear();
 		enemies.clear();
 		player.resetLife();

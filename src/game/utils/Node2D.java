@@ -11,7 +11,8 @@ public abstract class Node2D {
 		this.direction = new Vec2D(direction);
 	}
 	public Node2D(Vec2D position) {
-		this(position, new Vec2D(0, -1));
+		this.position = position;
+		this.direction = new Vec2D(0, -1);
 	}
 	public Node2D() {
 		this.position = new Vec2D();

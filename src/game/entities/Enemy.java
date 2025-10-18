@@ -19,12 +19,4 @@ public class Enemy extends Entity {
 		this.direction = movementPattern.update(delta, this.position);
 		super._process(delta);
 	}
-	
-	public boolean takeDamage() {
-		if (super.isInvincible()) return false;
-
-		life--;
-		setInvincible(0.5f);
-		return life <= 0;
-	}
 }
