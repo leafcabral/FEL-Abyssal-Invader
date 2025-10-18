@@ -11,14 +11,12 @@ public class Sprite2D extends Node2D {
 	public Vec2D size;
 	public Color color;
 	
-	public Sprite2D(BufferedImage texture, Vec2D size) {
+	public Sprite2D(BufferedImage texture, Vec2D size, Color color) {
 		this.texture = texture;
 		this.size = new Vec2D(size);
+		this.color = color;
 	}
 	
-	@Override
-	public void _ready() {}
-
 	@Override
 	public void _process(float delta) {}
 

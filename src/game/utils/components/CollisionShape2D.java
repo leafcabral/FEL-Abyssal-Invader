@@ -7,12 +7,7 @@ import java.awt.Graphics2D;
 public class CollisionShape2D extends Node2D {
 	public Vec2D size;
 	
-	public CollisionShape2D(Vec2D size) {
-		this.size = new Vec2D(size);
-	}
-	
-	@Override
-	public void _ready() {}
+	public CollisionShape2D(Vec2D size) { this.size = new Vec2D(size); }
 
 	@Override
 	public void _process(float delta) {}
