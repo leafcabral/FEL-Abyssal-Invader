@@ -60,7 +60,7 @@ public class Player extends GameObject {
 			}
 		}
 		
-		if (direction.x != 0) {
+		if (movementDirection.x != 0) {
 			if (changeSpriteTimer > 0) {
 				changeSpriteTimer -= delta;
 			} else {
@@ -73,28 +73,11 @@ public class Player extends GameObject {
 			changeSpriteTimer = changeSpriteDelay;
 			imgIndex = 0;
 		}
+		
+		if (this.movementDirection.x >= 0) { flipped = false; }
+		else { flipped = true; }
 	};
 	
-	@Override
-	public void draw(Graphics2D g2) {
-		if (sprite == null) {
-			draw_fallback(g2);
-		} else if (this.direction.x >= 0) {
-			g2.drawImage(
-				sprite,
-				(int) pos.x, (int) pos.y,
-				(int) size.x, (int) size.y,
-				null
-			);
-		} else {
-			g2.drawImage(
-				sprite,
-				(int) pos.x + (int)size.x, (int) pos.y,
-				(int) size.x * -1, (int) size.y,
-				null
-			);
-		}
-	}
 	
 	public void move(float velocity) {
 		this.pos.x += velocity;

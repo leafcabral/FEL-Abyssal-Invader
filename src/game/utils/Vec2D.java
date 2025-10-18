@@ -57,6 +57,10 @@ public class Vec2D {
 		return (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	}
 	
+	public float angle() {
+		return (float) Math.atan2(this.y, this.x);
+	}
+	
 	public Vec2D normalize() {
 		float magnitude = this.magnitude();
 		Vec2D normalized = new Vec2D();

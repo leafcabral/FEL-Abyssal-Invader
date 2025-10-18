@@ -94,6 +94,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			resources.getImage("player-moving-2.png")
 		);
 		this.player.pos.x -= this.player.size.x/2;
+		this.player.spriteDirection = new Vec2D(0, -1);
 		this.enemies = new CopyOnWriteArrayList<>();
 		this.bullets = new CopyOnWriteArrayList<>();
 		
@@ -136,13 +137,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private void handlePlayerInput() {
 		
 		if (input.isActionPressed("moveLeft")) {
-			player.direction.x = -1;
+			player.movementDirection.x = -1;
 		} else if (input.isActionPressed("moveRight")) {
-			player.direction.x = 1;
+			player.movementDirection.x = 1;
 		} else {
-			player.direction.x = 0;
+			player.movementDirection.x = 0;
 		}
-		float velocity = player.speed * delta * player.direction.x;
+		float velocity = player.speed * delta * player.movementDirection.x;
 		
 		player.update(delta);
 		player.move(velocity);
