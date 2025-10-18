@@ -7,6 +7,7 @@ import game.managers.GraphicsManager;
 import game.managers.InputManager;
 import game.managers.ResourceManager;
 import static game.entities.Player.WeaponType.*;
+import game.entities.patterns.MovementPattern;
 
 
 import game.utils.Vec2D;
@@ -98,7 +99,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		dummyEnemy = new Enemy(
 			new Vec2D(screenWidth, screenHeight),
-			resources.getImage("alien1")
+			resources.getImage("alien1"),
+			MovementPattern.newStraight(100)
 		);
 		dummyBullet = Bullet.newDefaultBullet(
 			new Vec2D(screenWidth, screenHeight),
@@ -191,7 +193,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		String imgName = "enemy" + (random.nextInt(6) + 1);
 		boolean canSpawn = true;
 
-		Enemy enemy = new Enemy(pos, resources.getImage(imgName));
+		MovementPattern pattern = MovementPattern.newStraight(100);
+		float movementType = random.nextFloat();
+		if (movementType <= 0.7f) {
+			pattern = MovementPattern.newStraight(100);
+		} else {
+			pattern = MovementPattern.newWave(50, 1f, 3f);
+		}
+		Enemy enemy = new Enemy(pos, resources.getImage(imgName), pattern);
 
 		for (Enemy enemyListed : enemies) {
 			if (enemy.collides(enemyListed)) {

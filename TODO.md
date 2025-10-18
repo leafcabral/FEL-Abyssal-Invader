@@ -9,8 +9,6 @@
 - Fazer waves seguintes terem mais tipos de inimigos
 - Fazer jogador ter aceleração
 - Inimigos com especiais:
-	- Zig-zag
-	- Atira
 	- Mais rápido
 	- Mais forte
 - Inimigos podem dropar power-ups:
