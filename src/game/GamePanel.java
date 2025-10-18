@@ -50,7 +50,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private float waveTime = WAVE_DEFAULT_DURATION;
 	private long startTime;
 	private long pauseStartedTime = 0, totalPauseTime = 0;
-	private String waveTimeText;
+	private String waveTimeText = "";
 
 	private Thread gameThread;
 	private final Random random;
@@ -88,6 +88,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		this.status = GameStatus.MAIN_MENU;
 		this.lastFrameTime = Instant.now();
+		this.startTime = System.nanoTime();
 		
 		this.player = new Player(
 			new Vec2D(screenWidth / 2, screenHeight - 100),
@@ -322,33 +323,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		graphics.drawObjects(g2, new ArrayList(enemies));
 		graphics.drawObject(g2, player);
 		
-		
-		
-		
-		g2.drawRect(
-			player.collisionShape.x,
-			player.collisionShape.y,
-			player.collisionShape.width,
-			player.collisionShape.height
-		);
-		bullets.forEach(bullet -> 
-		g2.drawRect(
-			bullet.collisionShape.x,
-			bullet.collisionShape.y,
-			bullet.collisionShape.width,
-			bullet.collisionShape.height
-		));
-		enemies.forEach(enemy -> 
-		g2.drawRect(
-			enemy.collisionShape.x,
-			enemy.collisionShape.y,
-			enemy.collisionShape.width,
-			enemy.collisionShape.height
-		));
-		
-		
-		
-		
 		g2.setColor(Color.WHITE);
 		g2.setFont(new Font("Arial", Font.BOLD, 32));
 		String scoreText = Integer.toString(score);
@@ -358,11 +332,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g2.drawString(scoreText, (screenWidth - textWidth) / 2, 40);
 		int bestWidth = g2.getFontMetrics().stringWidth(bestText);
 		g2.drawString(bestText, (screenWidth-bestWidth-20),40);
+		
+		g2.setColor(Color.LIGHT_GRAY);
 		g2.setFont(new Font("Arial", Font.BOLD, 12));
-		String waveText = getTime() + ("WAVE " + Integer.toString(wave));
+		String waveText = getTime() + (" • WAVE " + Integer.toString(wave));
 		int waveTextHeight = g2.getFontMetrics().getHeight();
-		g2.drawString(waveText, (screenWidth - textWidth) / 2, 40 + waveTextHeight);
-
+		int waveTextWidth = g2.getFontMetrics().stringWidth(waveText);
+		g2.drawString(waveText, (screenWidth - waveTextWidth) / 2, 40 + waveTextHeight);
+		g2.setColor(Color.WHITE);
+		
 		graphics.drawWeapons(g2, screenVec, player, resources);
 		graphics.drawLifes(g2, player, resources);
 
@@ -444,13 +422,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				GraphicsManager.MenuOption option = GraphicsManager.MenuOption.RESUME;
 				
 				switch (status) {
-					case GameStatus.PAUSED -> option = graphics.pausedOptions[menuSelectedOptionIndex];
-					case GameStatus.GAME_OVER -> option = graphics.gameOverOptions[menuSelectedOptionIndex];
+					case MAIN_MENU -> option = graphics.mainMenuOptions[menuSelectedOptionIndex];
+					case PAUSED -> option = graphics.pausedOptions[menuSelectedOptionIndex];
+					case GAME_OVER -> option = graphics.gameOverOptions[menuSelectedOptionIndex];
 				}
 				switch (option) {
-					case GraphicsManager.MenuOption.RESUME -> { status = GameStatus.RUNNING; totalPauseTime += System.nanoTime() - pauseStartedTime; pauseStartedTime = 0; }
-					case GraphicsManager.MenuOption.RESTART -> resetGame();
-					case GraphicsManager.MenuOption.QUIT -> System.exit(0);
+					case START -> {
+						resetGame();
+					}
+					case RESUME -> {
+						status = GameStatus.RUNNING;
+						totalPauseTime += System.nanoTime() - pauseStartedTime;
+						pauseStartedTime = 0;
+					}
+					case RESTART -> resetGame();
+					case QUIT -> System.exit(0);
 				}
 				
 				menuSelectedOptionIndex = 0;
@@ -464,7 +450,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	}
 
 	public String getTime() {
-		if (status != GameStatus.RUNNING) return waveTimeText;
+		if (status != GameStatus.RUNNING) { return (waveTimeText = "00:00"); }
 
 		long secondsTotal = (totalPauseTime > 0) ? ((System.nanoTime() -  startTime) - totalPauseTime) / 1_000_000_000 : (System.nanoTime() - startTime) / 1_000_000_000;
 		long minutes = (secondsTotal / 60) % 60;

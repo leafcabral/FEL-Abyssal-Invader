@@ -40,9 +40,9 @@ public class GraphicsManager {
 	public MenuOption gameOverOptions[] = {
 		MenuOption.RESTART, MenuOption.QUIT
 	};
-    public MenuOption mainMenuOptions[] = {
-        MenuOption.START, MenuOption.QUIT
-    };
+	public MenuOption mainMenuOptions[] = {
+		MenuOption.START, MenuOption.QUIT
+	};
 
 	public GraphicsManager(
 			Vec2D screenSize,
