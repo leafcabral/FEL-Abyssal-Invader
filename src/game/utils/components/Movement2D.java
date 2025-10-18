@@ -5,7 +5,6 @@ import game.utils.Vec2D;
 import java.awt.Graphics2D;
 
 public class Movement2D extends Node2D {
-	public Vec2D direction = new Vec2D();
 	public float speed = 0;
 	
 	public Movement2D(Vec2D direction, float speed) {
