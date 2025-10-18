@@ -130,6 +130,11 @@ public class GraphicsManager {
 			AlphaComposite.SRC_OVER, 1.0f
 		);
 
+		String iconNames[] = {
+			"bullet-default-icon.png",
+			"bullet-shotgun-icon.png",
+			"bullet-blast-icon.png",
+		};
 		for (int i = 0; i < 3; i++) {
 			if (player.getCurrentWeapon().ordinal() == i) {
 				g2.drawRect(
@@ -139,7 +144,7 @@ public class GraphicsManager {
 			}
 
 			g2.drawImage(
-				resources.getImage("bulletIcon" + (i+1)),
+				resources.getImage(iconNames[i]),
 				(int)currentPos.x, (int)currentPos.y,
 				width, height,
 				null

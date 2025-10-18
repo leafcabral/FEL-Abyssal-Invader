@@ -153,7 +153,7 @@ public class ResourceManager {
 		AudioInputStream audio = sounds.get(key);
 		
 		if (audio == null) {
-			System.err.println("Som não existe: " + key);
+			System.err.println("Som nao existe: " + key);
 		} else {
 			try {
 				Clip clip = AudioSystem.getClip();

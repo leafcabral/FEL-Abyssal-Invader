@@ -77,7 +77,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.resources = new ResourceManager(true);
 		this.graphics = new GraphicsManager(
 			new Vec2D(screenWidth, screenHeight),
-			resources.getImage("background"),
+			resources.getImage("background.png"),
 			Color.BLACK
 		);
 		this.input = new InputManager();
@@ -89,9 +89,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		this.player = new Player(
 			new Vec2D(screenWidth / 2, screenHeight - 100),
-			resources.getImage("player1"),
-			resources.getImage("player2"),
-			resources.getImage("player3")
+			resources.getImage("player-idle.png"),
+			resources.getImage("player-moving-1.png"),
+			resources.getImage("player-moving-2.png")
 		);
 		this.player.pos.x -= this.player.size.x/2;
 		this.enemies = new CopyOnWriteArrayList<>();
@@ -99,12 +99,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		dummyEnemy = new Enemy(
 			new Vec2D(screenWidth, screenHeight),
-			resources.getImage("alien1"),
+			resources.getImage("enemy-1.png"),
 			MovementPattern.newStraight(100)
 		);
 		dummyBullet = Bullet.newDefaultBullet(
 			new Vec2D(screenWidth, screenHeight),
-			resources.getImage("bullet1")
+			resources.getImage("bullet-default.png")
 		);
 	}
 
@@ -161,7 +161,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				case DEFAULT:
 					bullets.add(Bullet.newDefaultBullet(
 						bulletPos,
-						resources.getImage("bullet1")
+						resources.getImage("bullet-default.png")
 					));
 					break;
 				case SHOTGUN:
@@ -169,19 +169,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 						bullets,
 						Bullet.newShotgunBullets(
 							bulletPos,
-							resources.getImage("bullet2")
+							resources.getImage("bullet-shotgun.png")
 						)
 					);
 					break;
 				case BLAST:
 					bullets.add(Bullet.newBlastBullet(
 						bulletPos,
-						resources.getImage("bullet3")
+						resources.getImage("bullet-blast.png")
 					));
 					break;
 					
 			}
-			resources.playSound("shot");
+			resources.playSound("shot.wav");
 			player.resetShootTimer();
 		}
 	}
@@ -190,7 +190,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		Vec2D pos = new Vec2D();
 		pos.x = random.nextInt(screenWidth - (int)dummyEnemy.size.x);
 		pos.y = -(int)dummyEnemy.size.y;
-		String imgName = "enemy" + (random.nextInt(6) + 1);
+		String imgName = "enemy-" + (random.nextInt(6) + 1) + ".png";
 		boolean canSpawn = true;
 
 		MovementPattern pattern = MovementPattern.newStraight(100);
@@ -257,7 +257,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				if (bullet.collides(enemy)) {
 					bulletsToRemove.add(bullet);
 					enemiesToRemove.add(enemy);
-					resources.playSound("explosion");
+					resources.playSound("explosion.wav");
 					score += 10;
 					if(best<=score){
 						best=score;
@@ -276,7 +276,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				else {
 					enemiesToRemove.add(enemy);
 				}
-				resources.playSound("explosion");
+				resources.playSound("explosion.wav");
 			}
 		}
 
@@ -300,6 +300,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		graphics.drawObjects(g2, new ArrayList(enemies));
 		graphics.drawObject(g2, player);
 		
+		g2.setColor(Color.WHITE);
 		g2.setFont(new Font("Arial", Font.BOLD, 32));
 		String scoreText = Integer.toString(score);
 		String bestr = Integer.toString(best);
@@ -315,8 +316,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 		graphics.drawWeapons(g2, screenVec, player, resources);
 		
-		for (int i = player.life, j = 10; i > 0; i--, j += 50) {
-			g2.drawImage(resources.getImage("life"), j, 10, null);
+		for (int i = player.life, j = 10; i > 0; i--, j += 57) {
+			g2.drawImage(resources.getImage("heart-full.png"), j, 15, 60, 60, null);
 		}
 
 		// Menu de pause

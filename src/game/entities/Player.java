@@ -40,7 +40,7 @@ public class Player extends GameObject {
 			pos, new Vec2D(75, 75),
 			new Vec2D(0, -1), 500, 
 			img1, Color.GREEN,
-			5
+			3
 		);
 		
 		this.sprites = new BufferedImage[]{img1, img2, img3};
