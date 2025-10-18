@@ -10,6 +10,7 @@ import static game.entities.Player.WeaponType.*;
 
 
 import game.utils.Vec2D;
+import java.awt.AlphaComposite;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -196,6 +197,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	}
 	
 	public void update() {
+		if (status == GameStatus.MAIN_MENU) {
+			graphics.updateBackground(delta);
+		}
 		if (status != GameStatus.RUNNING) {
 			return;
 		}
@@ -268,6 +272,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		// Desenhar fundo
 		graphics.drawBackground(g2);
 
+		// Menu principal
+		if (status == GameStatus.MAIN_MENU) {
+			g2.setColor(Color.BLACK);
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+			g2.fillRect(0, 0, screenWidth, screenHeight);
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+			
+			graphics.drawMainMenu(g2, menuSelectedOptionIndex, delta);
+			return;
+		}
+		
 		// Desenhar jogo
 		g2.setColor(Color.WHITE);
 
@@ -284,7 +299,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		int bestWidth = g2.getFontMetrics().stringWidth(bestText);
 		g2.drawString(bestText, (screenWidth-bestWidth-20),40);
 
-
 		graphics.drawWeapons(g2, screenVec, player, resources);
 		
 		for (int i = player.life, j = 10; i > 0; i--, j += 50) {
@@ -297,11 +311,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		} else if (status == GameStatus.GAME_OVER) {
 			graphics.drawGameOverMenu(g2, menuSelectedOptionIndex);
 		}
-                
-        // Menu principal
-        if (status == GameStatus.MAIN_MENU) {
-            graphics.drawMainMenu(g2, menuSelectedOptionIndex, delta);
-        }
 
 		g2.dispose();
 	}

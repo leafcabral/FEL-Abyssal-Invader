@@ -225,11 +225,10 @@ public class GraphicsManager {
 		drawGenericMenu(g2, "Game Over", gameOverOptions, selectedIndex);
 	}
         
-    public void drawMainMenu(Graphics2D g2, int selectedIndex, float delta) {
+	public void drawMainMenu(Graphics2D g2, int selectedIndex, float delta) {
 		MenuOption options[] = mainMenuOptions;
 
-        g2.setColor(Color.WHITE);
-		g2.fillRect(0, 0, (int)screenSize.x, (int)screenSize.y);
+		g2.setColor(Color.WHITE);
 
 		Vec2D optionSize = new Vec2D(0, 22);
                 
@@ -240,9 +239,6 @@ public class GraphicsManager {
 			screenCenter.x - menuSize.x / 2,
 			screenCenter.y - menuSize.y / 2
 		);
-
-		drawBackground(g2);
-		updateBackground((float)0.00001);
 
 		g2.setFont(new Font("Arial", Font.BOLD, 100));
 		int titleWidth = g2.getFontMetrics().stringWidth("FEL");
