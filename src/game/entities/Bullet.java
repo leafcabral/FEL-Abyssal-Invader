@@ -16,7 +16,7 @@ public class Bullet extends GameObject{
 
 	@Override
 	public void update(float delta) {
-		super.move(delta);
+		super.update(delta);
 	}
 	
 	public static Bullet newDefaultBullet(Vec2D pos, BufferedImage img) {

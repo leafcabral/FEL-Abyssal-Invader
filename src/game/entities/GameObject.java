@@ -4,17 +4,18 @@ import game.utils.Vec2D;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public abstract class GameObject {
-	public Vec2D pos;
-	public Vec2D size;
+	public Rectangle collisionShape;
 	public Vec2D movementDirection;
 	public float speed;
-	public Vec2D spriteDirection;
 	
 	public BufferedImage sprite;
+	public Rectangle spriteShape;
+	public Vec2D spriteDirection;
 	private final Color fallback_color;
 	public boolean flipped = false;
 	
@@ -22,8 +23,14 @@ public abstract class GameObject {
 	public GameObject(Vec2D pos, Vec2D size,
 	                  Vec2D direction, int speed,
 	                  BufferedImage sprite, Color fallback_color) {
-		this.pos = new Vec2D(pos);
-		this.size = new Vec2D(size);
+		this.collisionShape = new Rectangle(
+			pos.toPoint(),
+			size.toDimension()
+		);
+		this.spriteShape = new Rectangle(
+			pos.toPoint(),
+			size.toDimension()
+		);
 		this.movementDirection = new Vec2D(direction);
 		this.spriteDirection = new Vec2D(direction);
 		this.speed = speed;
@@ -33,7 +40,23 @@ public abstract class GameObject {
 	}
 	
 	
-	public abstract void update(float delta);
+	public void update(float delta) {
+		Vec2D velocity = getVelocity().multiply(delta);
+		move(velocity);
+	}
+	
+	public void move(Vec2D velocity) {
+		collisionShape.translate((int)velocity.x, (int)velocity.y);
+		spriteShape.translate((int)velocity.x, (int)velocity.y);
+	}
+	public void moveX(float velocityX) {
+		collisionShape.translate((int)velocityX, 0);
+		spriteShape.translate((int)velocityX, 0);
+	}
+	public void moveY(float velocityY) {
+		collisionShape.translate(0, (int)velocityY);
+		spriteShape.translate(0, (int)velocityY);
+	}
 	
 	public void draw(Graphics2D g2) {
 		if (sprite == null) {
@@ -42,31 +65,31 @@ public abstract class GameObject {
 		}
 		
 		// Função que pega Vec2D e acha seu angulo
-		float angle = spriteDirection.angle();
+		double angle = spriteDirection.angle();
 
 		AffineTransform original = g2.getTransform();
-		int centerX = (int)(pos.x + size.x / 2);
-		int centerY = (int)(pos.y + size.y / 2);
+		int centerX = (int)(spriteShape.x + spriteShape.width / 2);
+		int centerY = (int)(spriteShape.y + spriteShape.height / 2);
 
 		// Move centro da tela para centro da bala
-		g2.translate(centerX, centerY);
 		// Roda a tela (não tem como rodar o sprite)
-		g2.rotate(angle);
 		// Volta pra posição inicial
-		g2.translate(-size.x / 2, -size.y / 2);
+		g2.translate(centerX, centerY);
+		g2.rotate(angle);
+		g2.translate(-spriteShape.width / 2, -spriteShape.height / 2);
 
 		if (flipped) {
 			g2.drawImage(
 				sprite,
-				0, 0 + (int)size.y,
-				(int) size.x, (int) -size.y,
+				0, 0 + (int)spriteShape.height,
+				(int) spriteShape.width, (int) -spriteShape.height,
 				null
 			);
 		} else {
 			g2.drawImage(
 				sprite,
 				0, 0,
-				(int) size.x, (int) size.y,
+				(int) spriteShape.width, (int) spriteShape.height,
 				null
 			);
 		}
@@ -77,15 +100,15 @@ public abstract class GameObject {
 	public void draw_fallback(Graphics2D g2) {
 		g2.setColor(fallback_color);
 		g2.fillRect(
-			(int) pos.x, (int) pos.y,
-			(int) size.x, (int) size.y
+			(int) spriteShape.x, (int) spriteShape.y,
+			(int) spriteShape.width, (int) spriteShape.height
 		);
 	}
 	
 	public Vec2D getCenter() {
 		Vec2D center = new Vec2D();
-		center.x = pos.x + (size.x / 2);
-		center.y = pos.y + (size.y / 2);
+		center.x = spriteShape.x + (spriteShape.width / 2);
+		center.y = spriteShape.y + (spriteShape.height / 2);
 		
 		return center;
 	}
@@ -94,28 +117,16 @@ public abstract class GameObject {
 		return movementDirection.normalize().multiply(speed);
 	}
 	
-	public void move(float delta) {
-		pos.addIp(getVelocity().multiply(delta));
-	}
-	
 	public float left() {
-		return this.pos.x;
+		return this.spriteShape.x;
 	}
 	public float right() {
-		return this.pos.x + this.size.x;
+		return this.spriteShape.x + this.spriteShape.width;
 	}
 	public float top() {
-		return this.pos.y;
+		return this.spriteShape.y;
 	}
 	public float bottom() {
-		return this.pos.y + this.size.y;
-	}
-	
-	public boolean collides(GameObject other) {
-		return (this.left() < other.right() &&
-			this.right() > other.left() &&
-			this.top() < other.bottom() &&
-			this.bottom() > other.top()
-		);
+		return this.spriteShape.y + this.spriteShape.height;
 	}
 }

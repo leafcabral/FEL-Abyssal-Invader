@@ -40,7 +40,7 @@ public class Player extends GameObject {
 			BufferedImage img2, BufferedImage img3) {
 		this(
 			pos, new Vec2D(75, 75),
-			new Vec2D(0, -1), 500, 
+			new Vec2D(0, 0), 500, 
 			img1, Color.GREEN,
 			3
 		);
@@ -50,16 +50,17 @@ public class Player extends GameObject {
 
 	@Override
 	public void update(float delta) {
-		if (iFrameSeconds > 0) {
-			iFrameSeconds -= delta;
-		}
-
+		super.update(delta);
+		
+		// Atualiza temporizadores
+		if (iFrameSeconds > 0) { iFrameSeconds -= delta; }
 		for (int i = 0; i < weaponTimers.length; i++) {
 			if (weaponTimers[i] > 0) {
 				weaponTimers[i] -= delta;
 			}
 		}
 		
+		// Atualiza o sprite
 		if (movementDirection.x != 0) {
 			if (changeSpriteTimer > 0) {
 				changeSpriteTimer -= delta;
@@ -73,16 +74,11 @@ public class Player extends GameObject {
 			changeSpriteTimer = changeSpriteDelay;
 			imgIndex = 0;
 		}
-		
 		if (this.movementDirection.x >= 0) { flipped = false; }
 		else { flipped = true; }
-	};
-	
-	
-	public void move(float velocity) {
-		this.pos.x += velocity;
+		
 		this.sprite = this.sprites[imgIndex];
-	}
+	};
 	
 	public void makeInvencible(float seconds) {
 		iFrameSeconds = seconds;

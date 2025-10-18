@@ -9,7 +9,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public class Enemy extends GameObject {
-	private MovementPattern movement;
+	private MovementPattern movementPattern;
 	public int life;
 	private float iFrameSeconds = 0;
 
@@ -19,7 +19,7 @@ public class Enemy extends GameObject {
 		      int life, MovementPattern movement) {
 		super(pos, size, direction, speed, sprite, fallback_color);
 		this.life = life;
-		this.movement = movement;
+		this.movementPattern = movement;
 	}
 	public Enemy(Vec2D pos, BufferedImage img, MovementPattern movement) {
 		this(
@@ -32,13 +32,14 @@ public class Enemy extends GameObject {
 
 	@Override
 	public void update(float delta) {
-		this.movementDirection = movement.update(delta, this.pos);
-		this.spriteDirection = new Vec2D(movementDirection);
-		super.move(delta);
+		this.movementDirection = movementPattern.update(
+			delta,
+			new Vec2D(spriteShape.x, spriteShape.y)
+		);
+		this.spriteDirection = this.movementDirection;
+		super.update(delta);
 		
-		if (iFrameSeconds > 0) {
-			iFrameSeconds -= delta;
-		};
+		if (iFrameSeconds > 0) { iFrameSeconds -= delta; }
 	}
 	
 	public void makeIvencible(float seconds) {

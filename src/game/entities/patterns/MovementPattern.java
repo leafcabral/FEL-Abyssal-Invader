@@ -46,8 +46,8 @@ public abstract class MovementPattern {
 		@Override
 		public Vec2D update(float delta, Vec2D currentPos) {
 			time += delta;
-			float x = (float)Math.sin(time * frequency) * amplitude;
-			return new Vec2D(x, 1);
+			double x = Math.sin(time * frequency) * amplitude;
+			return new Vec2D((float)x, 1);
 		}
 	}
 }

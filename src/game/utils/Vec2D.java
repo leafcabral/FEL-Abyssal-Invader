@@ -1,5 +1,8 @@
 package game.utils;
 
+import java.awt.Dimension;
+import java.awt.Point;
+
 public class Vec2D {
 	public float x, y;
 	
@@ -57,8 +60,8 @@ public class Vec2D {
 		return (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	}
 	
-	public float angle() {
-		return (float) Math.atan2(this.y, this.x);
+	public double angle() {
+		return Math.atan2(this.y, this.x);
 	}
 	
 	public Vec2D normalize() {
@@ -75,5 +78,12 @@ public class Vec2D {
 		
 		this.x = (int) (((double) this.x) / magnitude);
 		this.y = (int) (((double) this.y) / magnitude);
+	}
+	
+	public Point toPoint() {
+		return new Point((int)x, (int)y);
+	}
+	public Dimension toDimension() {
+		return new Dimension((int)x, (int)y);
 	}
 }
