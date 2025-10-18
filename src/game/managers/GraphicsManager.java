@@ -134,6 +134,11 @@ public class GraphicsManager {
 			AlphaComposite.SRC_OVER, 1.0f
 		);
 
+		String iconNames[] = {
+			"bullet-default-icon.png",
+			"bullet-shotgun-icon.png",
+			"bullet-blast-icon.png",
+		};
 		for (int i = 0; i < 3; i++) {
 			if (player.getCurrentWeapon().ordinal() == i) {
 				g2.drawRect(
@@ -143,7 +148,7 @@ public class GraphicsManager {
 			}
 
 			g2.drawImage(
-				resources.getImage("bulletIcon" + (i+1)),
+				resources.getImage(iconNames[i]),
 				(int)currentPos.x, (int)currentPos.y,
 				width, height,
 				null
@@ -162,6 +167,37 @@ public class GraphicsManager {
 		}
 	}
 
+	public void drawLifes(Graphics2D g2, Player player, ResourceManager resources) {
+		BufferedImage full = resources.getImage("heart-full.png");
+		BufferedImage empty = resources.getImage("heart-empty.png");
+		
+		int posx = 10;
+		int posy = 15;
+		int sizex = 60;
+		int sizey = sizex;
+		int incrementx = 57;
+		
+		AlphaComposite emptyAC = AlphaComposite.getInstance(
+			AlphaComposite.SRC_OVER, 0.5f
+		);
+		AlphaComposite fullAC = AlphaComposite.getInstance(
+			AlphaComposite.SRC_OVER, 1.0f
+		);
+		
+		for (int i = 0; i < player.getCurrentLife(); i++) {
+			g2.drawImage(full, posx, posy, sizex, sizey, null);
+			posx += incrementx;
+		}
+		g2.setComposite(emptyAC);
+		for (int i = player.getCurrentLife(); i < player.getMaxLife(); i++) {
+			g2.drawImage(empty, posx, posy, sizex, sizey, null);
+			posx += incrementx;
+		}
+		
+		
+		g2.setComposite(fullAC);
+	}
+	
 	private void drawMenuBox(Graphics2D g2, Vec2D pos, Vec2D size) {
 		g2.setColor(new Color(60, 60, 60));
 		g2.fillRect((int)pos.x, (int)pos.y,(int)size.x, (int)size.y);

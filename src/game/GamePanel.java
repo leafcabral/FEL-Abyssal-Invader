@@ -7,6 +7,7 @@ import game.managers.GraphicsManager;
 import game.managers.InputManager;
 import game.managers.ResourceManager;
 import static game.entities.Player.WeaponType.*;
+import game.entities.patterns.MovementPattern;
 
 
 import game.utils.Vec2D;
@@ -20,6 +21,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import java.time.Instant;
@@ -43,6 +45,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private float delta = 0;
 	private int score = 0;
 	private int best = 0;
+	private int wave = 1;
+	private final float WAVE_DEFAULT_DURATION = 30f;
+	private float waveTime = WAVE_DEFAULT_DURATION;
+	private long startTime;
+	private long pauseStartedTime = 0, totalPauseTime = 0;
+	private String waveTimeText;
 
 	private Thread gameThread;
 	private final Random random;
@@ -71,7 +79,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.resources = new ResourceManager(true);
 		this.graphics = new GraphicsManager(
 			new Vec2D(screenWidth, screenHeight),
-			resources.getImage("background"),
+			resources.getImage("background.png"),
 			Color.BLACK
 		);
 		this.input = new InputManager();
@@ -83,21 +91,28 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		this.player = new Player(
 			new Vec2D(screenWidth / 2, screenHeight - 100),
-			resources.getImage("player1"),
-			resources.getImage("player2"),
-			resources.getImage("player3")
+			resources.getImage("player-idle.png"),
+			resources.getImage("player-moving-1.png"),
+			resources.getImage("player-moving-2.png")
 		);
-		this.player.pos.x -= this.player.size.x/2;
+		this.player.moveX(-this.player.spriteShape.width / 2);
+		this.player.spriteDirection = new Vec2D(0, -1);
+		this.player.collisionShape.grow(
+			- this.player.collisionShape.width / 3,
+			- this.player.collisionShape.height / 3
+		);
+		
 		this.enemies = new CopyOnWriteArrayList<>();
 		this.bullets = new CopyOnWriteArrayList<>();
 		
 		dummyEnemy = new Enemy(
 			new Vec2D(screenWidth, screenHeight),
-			resources.getImage("alien1")
+			resources.getImage("enemy-1.png"),
+			MovementPattern.newStraight(100)
 		);
 		dummyBullet = Bullet.newDefaultBullet(
 			new Vec2D(screenWidth, screenHeight),
-			resources.getImage("bullet1")
+			resources.getImage("bullet-default.png")
 		);
 	}
 
@@ -124,34 +139,36 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	}
 
 	private void handlePlayerInput() {
-		
 		if (input.isActionPressed("moveLeft")) {
-			player.direction.x = -1;
+			player.movementDirection.x = -1;
 		} else if (input.isActionPressed("moveRight")) {
-			player.direction.x = 1;
+			player.movementDirection.x = 1;
 		} else {
-			player.direction.x = 0;
-		}
-		float velocity = player.speed * delta * player.direction.x;
+			player.movementDirection.x = 0;
+		}		
 		
 		player.update(delta);
-		player.move(velocity);
+		
+		// Se apagar essa linha o programa não funciona
+		System.out.println(player.getVelocity().x);
 		
 		// Se fora, coloca pra dentro
-		player.pos.x = Math.max(0, Math.min(
-			player.pos.x, screenWidth - player.size.x)
-		);
+		if (player.right() > screenWidth) {
+			player.moveX(screenWidth - player.right());
+		} else if (player.left() < 0) {
+			player.moveX(0 - player.left());
+		}
 		
 		if (input.isActionPressed("shoot") && player.canShoot()) {
 			Vec2D bulletPos = new Vec2D(
-				player.getCenter().x - dummyBullet.size.x / 2,
-				player.pos.y - dummyBullet.size.y + 15
+				player.getCenter().x - dummyBullet.spriteShape.width / 2,
+				player.collisionShape.y
 			);
 			switch (player.getCurrentWeapon()) {
 				case DEFAULT:
 					bullets.add(Bullet.newDefaultBullet(
 						bulletPos,
-						resources.getImage("bullet1")
+						resources.getImage("bullet-default.png")
 					));
 					break;
 				case SHOTGUN:
@@ -159,41 +176,49 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 						bullets,
 						Bullet.newShotgunBullets(
 							bulletPos,
-							resources.getImage("bullet2")
+							resources.getImage("bullet-shotgun.png")
 						)
 					);
 					break;
 				case BLAST:
 					bullets.add(Bullet.newBlastBullet(
 						bulletPos,
-						resources.getImage("bullet3")
+						resources.getImage("bullet-blast.png")
 					));
 					break;
 					
 			}
-			resources.playSound("shot");
+			resources.playSound("shot.wav");
 			player.resetShootTimer();
 		}
 	}
 	
 	private void spawnEnemy() {
 		Vec2D pos = new Vec2D();
-		pos.x = random.nextInt(screenWidth - (int)dummyEnemy.size.x);
-		pos.y = -(int)dummyEnemy.size.y;
-		String imgName = "enemy" + (random.nextInt(6) + 1);
+		pos.x = random.nextInt(screenWidth - (int)dummyEnemy.spriteShape.width);
+		pos.y = -(int)dummyEnemy.spriteShape.height;
+		String imgName = "enemy-" + (random.nextInt(6) + 1) + ".png";
+
+		MovementPattern pattern = MovementPattern.newStraight(100);
+		float movementType = random.nextFloat();
+		if (movementType <= 0.7f) {
+			pattern = MovementPattern.newStraight(100);
+		} else {
+			pattern = MovementPattern.newWave(50, 1f, 2f);
+		}
+		Enemy enemy = new Enemy(pos, resources.getImage(imgName), pattern);
+
 		boolean canSpawn = true;
-
-		Enemy enemy = new Enemy(pos, resources.getImage(imgName));
-
 		for (Enemy enemyListed : enemies) {
-			if (enemy.collides(enemyListed)) {
+			if (enemy.collisionShape.intersects(enemyListed.collisionShape)) {
 				canSpawn = false;
 				break;
 			}
 		}
 
-		if (canSpawn) enemies.add(enemy);
-		else spawnEnemy();
+		if (canSpawn) {
+			enemies.add(enemy);
+		}
 	}
 	
 	public void update() {
@@ -210,11 +235,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		// Remove os que sairam da tela
 		bullets.removeIf(bullet -> {
 			bullet.update(delta);
-			return bullet.pos.y < 0; 
+			return bullet.collisionShape.y < 0; 
 		});
 		enemies.removeIf(enemy -> {
 			enemy.update(delta);
-			return enemy.pos.y > screenHeight;
+			return enemy.collisionShape.y > screenHeight;
 		});
 		
 		// Cria novo inimigo
@@ -223,6 +248,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			// Entre 0.5 a 1.5 segundos
 			nextSpawnTime = random.nextFloat() + 0.5f;
 		}
+
+		waveTime -= delta;
+
+		if (waveTime <= 0) {
+			wave++;
+			waveTime = WAVE_DEFAULT_DURATION;
+  		}
 
 		checkCollisions();
 	}
@@ -233,10 +265,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		for (Bullet bullet : bullets) {
 			for (Enemy enemy : enemies) {
-				if (bullet.collides(enemy)) {
+				if (bullet.collisionShape.intersects(enemy.collisionShape)) {
 					bulletsToRemove.add(bullet);
 					enemiesToRemove.add(enemy);
-					resources.playSound("explosion");
+					resources.playSound("explosion.wav");
 					score += 10;
 					if(best<=score){
 						best=score;
@@ -247,7 +279,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 
 		for (Enemy enemy : enemies) {
-			if (player.collides(enemy)) {
+			if (player.collisionShape.intersects(enemy.collisionShape)) {
 				if (player.takeDamage()) {
 					System.out.println("Fim de Jogo!");
 					status = GameStatus.GAME_OVER;
@@ -255,7 +287,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				else {
 					enemiesToRemove.add(enemy);
 				}
-				resources.playSound("explosion");
+				resources.playSound("explosion.wav");
 			}
 		}
 
@@ -290,6 +322,34 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		graphics.drawObjects(g2, new ArrayList(enemies));
 		graphics.drawObject(g2, player);
 		
+		
+		
+		
+		g2.drawRect(
+			player.collisionShape.x,
+			player.collisionShape.y,
+			player.collisionShape.width,
+			player.collisionShape.height
+		);
+		bullets.forEach(bullet -> 
+		g2.drawRect(
+			bullet.collisionShape.x,
+			bullet.collisionShape.y,
+			bullet.collisionShape.width,
+			bullet.collisionShape.height
+		));
+		enemies.forEach(enemy -> 
+		g2.drawRect(
+			enemy.collisionShape.x,
+			enemy.collisionShape.y,
+			enemy.collisionShape.width,
+			enemy.collisionShape.height
+		));
+		
+		
+		
+		
+		g2.setColor(Color.WHITE);
 		g2.setFont(new Font("Arial", Font.BOLD, 32));
 		String scoreText = Integer.toString(score);
 		String bestr = Integer.toString(best);
@@ -298,12 +358,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g2.drawString(scoreText, (screenWidth - textWidth) / 2, 40);
 		int bestWidth = g2.getFontMetrics().stringWidth(bestText);
 		g2.drawString(bestText, (screenWidth-bestWidth-20),40);
+		g2.setFont(new Font("Arial", Font.BOLD, 12));
+		String waveText = getTime() + ("WAVE " + Integer.toString(wave));
+		int waveTextHeight = g2.getFontMetrics().getHeight();
+		g2.drawString(waveText, (screenWidth - textWidth) / 2, 40 + waveTextHeight);
 
 		graphics.drawWeapons(g2, screenVec, player, resources);
-		
-		for (int i = player.life, j = 10; i > 0; i--, j += 50) {
-			g2.drawImage(resources.getImage("life"), j, 10, null);
-		}
+		graphics.drawLifes(g2, player, resources);
 
 		// Menu de pause
 		if (status == GameStatus.PAUSED) {
@@ -317,10 +378,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 	private void resetGame() {
 		score = 0;
-		player.pos.x = screenWidth / 2 - 25;
+		player.collisionShape.x = screenWidth / 2 - player.collisionShape.width;
 		bullets.clear();
 		enemies.clear();
 		player.resetLife();
+		startTime = System.nanoTime();
+		pauseStartedTime = 0;
+		totalPauseTime = 0;
+		waveTime = WAVE_DEFAULT_DURATION;
 		status = GameStatus.RUNNING;
 	}
 
@@ -349,9 +414,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			if (status == GameStatus.RUNNING) {
 				status = GameStatus.PAUSED;
 				menuSelectedOptionIndex = 0;
+				pauseStartedTime = System.nanoTime();
 			}
 			else if (status == GameStatus.PAUSED) {
 				status = GameStatus.RUNNING;
+				totalPauseTime += System.nanoTime() - pauseStartedTime;
+				pauseStartedTime = 0;
 			}
 		}
 		
@@ -372,21 +440,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 		
 		if (input.isActionPressed("confirm")) {
-			GraphicsManager.MenuOption option = GraphicsManager.MenuOption.RESUME;
-			
-			switch (status) {
-				case GameStatus.PAUSED -> option = graphics.pausedOptions[menuSelectedOptionIndex];
-				case GameStatus.GAME_OVER -> option = graphics.gameOverOptions[menuSelectedOptionIndex];
-                                case GameStatus.MAIN_MENU -> option = graphics.mainMenuOptions[menuSelectedOptionIndex];
+			if (status != GameStatus.RUNNING) {
+				GraphicsManager.MenuOption option = GraphicsManager.MenuOption.RESUME;
+				
+				switch (status) {
+					case GameStatus.PAUSED -> option = graphics.pausedOptions[menuSelectedOptionIndex];
+					case GameStatus.GAME_OVER -> option = graphics.gameOverOptions[menuSelectedOptionIndex];
+				}
+				switch (option) {
+					case GraphicsManager.MenuOption.RESUME -> { status = GameStatus.RUNNING; totalPauseTime += System.nanoTime() - pauseStartedTime; pauseStartedTime = 0; }
+					case GraphicsManager.MenuOption.RESTART -> resetGame();
+					case GraphicsManager.MenuOption.QUIT -> System.exit(0);
+				}
+				
+				menuSelectedOptionIndex = 0;
 			}
-			switch (option) {
-				case GraphicsManager.MenuOption.RESUME -> status = GameStatus.RUNNING;
-				case GraphicsManager.MenuOption.RESTART -> resetGame();
-				case GraphicsManager.MenuOption.QUIT -> System.exit(0);
-                                case GraphicsManager.MenuOption.START -> status = GameStatus.RUNNING;
-			}
-			
-			menuSelectedOptionIndex = 0;
 		}
 	}
 	
@@ -394,4 +462,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		input.keyReleased(e.getKeyCode());
 	}
+
+	public String getTime() {
+		if (status != GameStatus.RUNNING) return waveTimeText;
+
+		long secondsTotal = (totalPauseTime > 0) ? ((System.nanoTime() -  startTime) - totalPauseTime) / 1_000_000_000 : (System.nanoTime() - startTime) / 1_000_000_000;
+		long minutes = (secondsTotal / 60) % 60;
+		long seconds = secondsTotal % 60;
+
+		waveTimeText = String.format("%02d:%02d", minutes, seconds) + " ";
+
+		return waveTimeText;
+	}
+
 }

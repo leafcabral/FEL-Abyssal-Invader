@@ -3,15 +3,12 @@
 ## Necessário até dia 20/10
 
 ### Problemas
-- A animação de explosão dos inimigos acaba repetindo alguns frames da explosão anterior/reiniciando logo após o fim
+- A animação de explosão dos inimigos acaba repetindo alguns frames da explosão anterior/reiniciando logo após o fim (branch feature/explosion-on-death)
 
 ### Jogabilidade
-- Implementar sistema de *waves* (por tempo)
 - Fazer waves seguintes terem mais tipos de inimigos
 - Fazer jogador ter aceleração
 - Inimigos com especiais:
-	- Zig-zag
-	- Atira
 	- Mais rápido
 	- Mais forte
 - Inimigos podem dropar power-ups:

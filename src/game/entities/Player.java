@@ -12,7 +12,8 @@ public class Player extends GameObject {
 		DEFAULT, SHOTGUN, BLAST
 	}
 	
-	public int life;
+	private int life;
+	private int maxLife;
 	
 	private WeaponType currentWeapon;
 	private float weaponDelays[] = {0.5f, 1.0f, 2.0f};
@@ -31,6 +32,7 @@ public class Player extends GameObject {
 		      int life) {
 		super(pos, size, direction, speed, sprite, fallback_color);
 		this.life = life;
+		this.maxLife = life;
 		this.switchWeapon(WeaponType.DEFAULT);
 	}
 	public Player(
@@ -38,9 +40,9 @@ public class Player extends GameObject {
 			BufferedImage img2, BufferedImage img3) {
 		this(
 			pos, new Vec2D(75, 75),
-			new Vec2D(0, -1), 500, 
+			new Vec2D(0, 0), 500, 
 			img1, Color.GREEN,
-			5
+			3
 		);
 		
 		this.sprites = new BufferedImage[]{img1, img2, img3};
@@ -48,17 +50,18 @@ public class Player extends GameObject {
 
 	@Override
 	public void update(float delta) {
-		if (iFrameSeconds > 0) {
-			iFrameSeconds -= delta;
-		}
-
+		super.update(delta);
+		
+		// Atualiza temporizadores
+		if (iFrameSeconds > 0) { iFrameSeconds -= delta; }
 		for (int i = 0; i < weaponTimers.length; i++) {
 			if (weaponTimers[i] > 0) {
 				weaponTimers[i] -= delta;
 			}
 		}
 		
-		if (direction.x != 0) {
+		// Atualiza o sprite
+		if (movementDirection.x != 0) {
 			if (changeSpriteTimer > 0) {
 				changeSpriteTimer -= delta;
 			} else {
@@ -71,33 +74,11 @@ public class Player extends GameObject {
 			changeSpriteTimer = changeSpriteDelay;
 			imgIndex = 0;
 		}
-	};
-	
-	@Override
-	public void draw(Graphics2D g2) {
-		if (sprite == null) {
-			draw_fallback(g2);
-		} else if (this.direction.x >= 0) {
-			g2.drawImage(
-				sprite,
-				(int) pos.x, (int) pos.y,
-				(int) size.x, (int) size.y,
-				null
-			);
-		} else {
-			g2.drawImage(
-				sprite,
-				(int) pos.x + (int)size.x, (int) pos.y,
-				(int) size.x * -1, (int) size.y,
-				null
-			);
-		}
-	}
-	
-	public void move(float velocity) {
-		this.pos.x += velocity;
+		if (this.movementDirection.x >= 0) { flipped = false; }
+		else { flipped = true; }
+		
 		this.sprite = this.sprites[imgIndex];
-	}
+	};
 	
 	public void makeInvencible(float seconds) {
 		iFrameSeconds = seconds;
@@ -112,6 +93,14 @@ public class Player extends GameObject {
 	}
 	public void clearShootTimer() {
 		setWeaponTimer(0);
+	}
+	
+	public int getCurrentLife() {
+		return life;
+	}
+	
+	public int getMaxLife() {
+		return maxLife;
 	}
 
 	public boolean takeDamage() {
