@@ -315,10 +315,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g2.drawString(waveText, (screenWidth - textWidth) / 2, 40 + waveTextHeight);
 
 		graphics.drawWeapons(g2, screenVec, player, resources);
-		
-		for (int i = player.life, j = 10; i > 0; i--, j += 57) {
-			g2.drawImage(resources.getImage("heart-full.png"), j, 15, 60, 60, null);
-		}
+		graphics.drawLifes(g2, player, resources);
 
 		// Menu de pause
 		if (status == GameStatus.PAUSED) {

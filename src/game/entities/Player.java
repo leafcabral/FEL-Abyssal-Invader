@@ -12,7 +12,8 @@ public class Player extends GameObject {
 		DEFAULT, SHOTGUN, BLAST
 	}
 	
-	public int life;
+	private int life;
+	private int maxLife;
 	
 	private WeaponType currentWeapon;
 	private float weaponDelays[] = {0.5f, 1.0f, 2.0f};
@@ -31,6 +32,7 @@ public class Player extends GameObject {
 		      int life) {
 		super(pos, size, direction, speed, sprite, fallback_color);
 		this.life = life;
+		this.maxLife = life;
 		this.switchWeapon(WeaponType.DEFAULT);
 	}
 	public Player(
@@ -112,6 +114,14 @@ public class Player extends GameObject {
 	}
 	public void clearShootTimer() {
 		setWeaponTimer(0);
+	}
+	
+	public int getCurrentLife() {
+		return life;
+	}
+	
+	public int getMaxLife() {
+		return maxLife;
 	}
 
 	public boolean takeDamage() {
