@@ -43,6 +43,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private float delta = 0;
 	private int score = 0;
 	private int best = 0;
+	private int wave = 1;
+	private final float WAVE_DEFAULT_DURATION = 30f;
+	private float waveTime = WAVE_DEFAULT_DURATION;
+	private long startTime;
+	private long pauseStartedTime = 0, totalPauseTime = 0;
+	private String waveTimeText;
 
 	private Thread gameThread;
 	private final Random random;
@@ -118,6 +124,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	@Override
 	public void run() {
 		this.status = GameStatus.RUNNING;
+		this.startTime = System.nanoTime();
 		
 		while (gameThread != null) {
 			updateDelta();
@@ -231,6 +238,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			nextSpawnTime = random.nextFloat() + 0.5f;
 		}
 
+		waveTime -= delta;
+
+		if (waveTime <= 0) {
+			wave++;
+			waveTime = WAVE_DEFAULT_DURATION;
+  		}
+
 		checkCollisions();
 	}
 
@@ -294,7 +308,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g2.drawString(scoreText, (screenWidth - textWidth) / 2, 40);
 		int bestWidth = g2.getFontMetrics().stringWidth(bestText);
 		g2.drawString(bestText, (screenWidth-bestWidth-20),40);
-
+		g2.setFont(new Font("Arial", Font.BOLD, 12));
+		String waveText = getTime() + ("WAVE " + Integer.toString(wave));
+		int waveTextHeight = g2.getFontMetrics().getHeight();
+		g2.drawString(waveText, (screenWidth - textWidth) / 2, 40 + waveTextHeight);
 
 		graphics.drawWeapons(g2, screenVec, player, resources);
 		
@@ -318,6 +335,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		bullets.clear();
 		enemies.clear();
 		player.resetLife();
+		startTime = System.nanoTime();
+		pauseStartedTime = 0;
+		totalPauseTime = 0;
+		waveTime = WAVE_DEFAULT_DURATION;
 		status = GameStatus.RUNNING;
 	}
 
@@ -346,9 +367,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			if (status == GameStatus.RUNNING) {
 				status = GameStatus.PAUSED;
 				menuSelectedOptionIndex = 0;
+				pauseStartedTime = System.nanoTime();
 			}
 			else if (status == GameStatus.PAUSED) {
 				status = GameStatus.RUNNING;
+				totalPauseTime += System.nanoTime() - pauseStartedTime;
+				pauseStartedTime = 0;
 			}
 		}
 		
@@ -369,19 +393,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 		
 		if (input.isActionPressed("confirm")) {
-			GraphicsManager.MenuOption option = GraphicsManager.MenuOption.RESUME;
+			if (status != GameStatus.RUNNING) {
+				GraphicsManager.MenuOption option = GraphicsManager.MenuOption.RESUME;
 			
-			switch (status) {
-				case GameStatus.PAUSED -> option = graphics.pausedOptions[menuSelectedOptionIndex];
-				case GameStatus.GAME_OVER -> option = graphics.gameOverOptions[menuSelectedOptionIndex];
-			}
-			switch (option) {
-				case GraphicsManager.MenuOption.RESUME -> status = GameStatus.RUNNING;
-				case GraphicsManager.MenuOption.RESTART -> resetGame();
-				case GraphicsManager.MenuOption.QUIT -> System.exit(0);
-			}
+				switch (status) {
+					case GameStatus.PAUSED -> option = graphics.pausedOptions[menuSelectedOptionIndex];
+					case GameStatus.GAME_OVER -> option = graphics.gameOverOptions[menuSelectedOptionIndex];
+				}
+				switch (option) {
+					case GraphicsManager.MenuOption.RESUME -> { status = GameStatus.RUNNING; totalPauseTime += System.nanoTime() - pauseStartedTime; pauseStartedTime = 0; }
+					case GraphicsManager.MenuOption.RESTART -> resetGame();
+					case GraphicsManager.MenuOption.QUIT -> System.exit(0);
+				}
 			
-			menuSelectedOptionIndex = 0;
+				menuSelectedOptionIndex = 0;
+			}
 		}
 	}
 	
@@ -389,4 +415,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		input.keyReleased(e.getKeyCode());
 	}
+
+	public String getTime() {
+		if (status != GameStatus.RUNNING) return waveTimeText;
+
+		long secondsTotal = (totalPauseTime > 0) ? ((System.nanoTime() -  startTime) - totalPauseTime) / 1_000_000_000 : (System.nanoTime() - startTime) / 1_000_000_000;
+		long minutes = (secondsTotal / 60) % 60;
+		long seconds = secondsTotal % 60;
+
+		waveTimeText = String.format("%02d:%02d", minutes, seconds) + " ";
+
+		return waveTimeText;
+	}
+
 }
