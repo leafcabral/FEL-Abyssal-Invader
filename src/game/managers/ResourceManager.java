@@ -1,5 +1,8 @@
 package game.managers;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
@@ -20,20 +23,24 @@ public class ResourceManager {
 	public final String IMGS_DIR = RES_DIR + "images/";
 	public final String GIFS_DIR = RES_DIR + "gifs/";
 	public final String SOUNDS_DIR = RES_DIR + "sounds/";
+	public final String FONTS_DIR = RES_DIR + "fonts/";
 	
 	private HashMap<String, BufferedImage> images;
 	private HashMap<String, ImageIcon> gifs;
 	private HashMap<String, AudioInputStream> sounds;
+	private HashMap<String, Font> fonts;
 	
 	public ResourceManager(boolean preload) {
 		this.images = new HashMap<>();
 		this.gifs = new HashMap<>();
 		this.sounds = new HashMap<>();
+		this.fonts = new HashMap<>();
 		
 		if (preload) {
 			preloadImages();
 			preloadGifs();
 			preloadSounds();
+			preloadFonts();
 		}
 	}
 	
@@ -122,22 +129,31 @@ public class ResourceManager {
 			}
 		}
 	}
-	
 
-	private void loadSound(String key, String value) {
-		String path = SOUNDS_DIR + value;
-		
+	private void preloadFonts() {
+		List<Path> fontFiles;
 		try {
-			File soundFile = new File(path);
-			AudioInputStream audioIn;
-			audioIn = AudioSystem.getAudioInputStream(soundFile);
-			
-			// Se os audios não fosse tocados em cima do outro,
-			// seria melhor armazenar Clip ao inves de Audio...
-			sounds.put(key, audioIn);
-		} catch (Exception e) {
-			System.err.println("Erro ao carregar som: " + path);
+			fontFiles = Files.walk(Paths.get(FONTS_DIR))
+				.filter(Files::isRegularFile)
+				.collect(Collectors.toList()
+			);
+		} catch (IOException e) {
+			System.err.println("Failed to load fonts at " + FONTS_DIR);
 			e.printStackTrace();
+			return;
+		}
+		
+		for (Path fontPath : fontFiles) {
+			try {
+				String filename = fontPath.getFileName().toString();
+				Font font = Font.createFont(Font.TRUETYPE_FONT, fontPath.toFile());
+				
+				fonts.put(filename, font);
+				System.out.println(filename);
+			} catch (Exception e) {
+				System.err.println("Failed to load font at " + fontPath);
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -165,5 +181,10 @@ public class ResourceManager {
 
 			}
 		}
+	}
+	
+	public Font getFont(String key, int style, float size) {
+		if (fonts.get(key) == null) { return null; }
+		else { return fonts.get(key).deriveFont(style, size); }
 	}
 }

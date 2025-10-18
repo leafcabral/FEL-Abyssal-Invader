@@ -25,6 +25,8 @@ public class GraphicsManager {
                 START
 	}
 
+	private ResourceManager resources;
+	
 	public final Vec2D screenSize;
 	public final Vec2D screenCenter;
 
@@ -46,7 +48,8 @@ public class GraphicsManager {
 
 	public GraphicsManager(
 			Vec2D screenSize,
-			BufferedImage backgroundImage, Color backgroundColor
+			BufferedImage backgroundImage, Color backgroundColor,
+			ResourceManager resources
 	) {
 		this.screenSize = screenSize;
 		this.screenCenter = screenSize.multiply(0.5f);
@@ -66,6 +69,8 @@ public class GraphicsManager {
 		} else {
 			this.bgTrueSize = new Vec2D(screenSize);
 		}
+		
+		this.resources = resources;
 	}
 
 	public void updateBackground(float delta) {
@@ -197,14 +202,6 @@ public class GraphicsManager {
 		
 		g2.setComposite(fullAC);
 	}
-	
-	private void drawMenuBox(Graphics2D g2, Vec2D pos, Vec2D size) {
-		g2.setColor(new Color(60, 60, 60));
-		g2.fillRect((int)pos.x, (int)pos.y,(int)size.x, (int)size.y);
-
-		g2.setColor(Color.WHITE);
-		g2.drawRect((int)pos.x, (int)pos.y,(int)size.x, (int)size.y);
-	}
 
 	public void drawGenericMenu(
 			Graphics2D g2, String title,
@@ -224,32 +221,34 @@ public class GraphicsManager {
 			screenCenter.y - menuSize.y / 2
 		);
 
-		drawMenuBox(g2, menuPos, menuSize);
 
-		g2.setFont(new Font("Arial", Font.BOLD, 20));
+		g2.setColor(Color.WHITE);
+		g2.setFont(resources.getFont("photonico.ttf", Font.BOLD, 32));
 		int titleWidth = g2.getFontMetrics().stringWidth(title);
 		g2.drawString(title, (screenSize.x - titleWidth) / 2, menuPos.y + 25);
 
-		g2.setFont(new Font("Arial", Font.PLAIN, 16));
+		g2.setFont(resources.getFont("photonico.ttf", Font.PLAIN, 20));
 		for (int i = 0; i < options.length; i++) {
 			MenuOption option = options[i];
 
-			optionSize.x = g2.getFontMetrics().stringWidth(
-				option.name()
-			);
-			Vec2D optionPos = new Vec2D(
-				screenCenter.x - optionSize.x/2,
-				(int)menuPos.y + 25 + i*(optionSize.y + 5) + 40
-			);
-
+			String optionName = option.name();
 			if (i == selectedIndex) {
 				g2.setColor(Color.WHITE);
-				g2.drawString(">", optionPos.x - 20, optionPos.y);
+				optionName = "> " + optionName + " <";
 			} else {
 				g2.setColor(Color.LIGHT_GRAY);
 			}
+			
+			optionSize.x = g2.getFontMetrics().stringWidth(
+				optionName //option.name()
+			);
+			Vec2D optionPos = new Vec2D(
+				screenCenter.x - optionSize.x/2,
+				screenCenter.y + 25 + i*(optionSize.y + 25)
+			);
 
-			g2.drawString(option.name(), optionPos.x, optionPos.y);
+
+			g2.drawString(optionName, optionPos.x, optionPos.y);
 		}
 	}
 
@@ -261,7 +260,7 @@ public class GraphicsManager {
 		drawGenericMenu(g2, "Game Over", gameOverOptions, selectedIndex);
 	}
         
-	public void drawMainMenu(Graphics2D g2, int selectedIndex, float delta) {
+	public void drawMainMenu(Graphics2D g2, int selectedIndex) {
 		MenuOption options[] = mainMenuOptions;
 
 		g2.setColor(Color.WHITE);
@@ -276,35 +275,39 @@ public class GraphicsManager {
 			screenCenter.y - menuSize.y / 2
 		);
 
-		g2.setFont(new Font("Arial", Font.BOLD, 100));
+		g2.setColor(new Color(184, 134, 11));
+		g2.setFont(resources.getFont("steamwreck.ttf", Font.ITALIC, 100));
 		int titleWidth = g2.getFontMetrics().stringWidth("FEL");
-		g2.drawString("FEL", (screenSize.x - titleWidth) / 2, menuPos.y + 125);
+		g2.drawString("FEL", (screenSize.x - titleWidth) / 2, menuPos.y + 200);
 
 
-		g2.setFont(new Font("Arial", Font.BOLD, 60));
+		g2.setColor(Color.WHITE);
+		g2.setFont(resources.getFont("steamwreck.ttf", Font.PLAIN, 60));
 		titleWidth = g2.getFontMetrics().stringWidth("The Space Invader");
-		g2.drawString("The Space Invader", (screenSize.x - titleWidth) / 2, menuPos.y + 200);
+		g2.drawString("The Space Invader", (screenSize.x - titleWidth) / 2, menuPos.y + 260);
 
-		g2.setFont(new Font("Arial", Font.PLAIN, 40));
+		g2.setFont(resources.getFont("photonico.ttf", Font.PLAIN, 40));
 		for (int i = 0; i < options.length; i++) {
 			MenuOption option = options[i];
 
+			String optionName = option.name();
+			if (i == selectedIndex) {
+				g2.setColor(Color.WHITE);
+				optionName = "> " + optionName + " <";
+			} else {
+				g2.setColor(Color.LIGHT_GRAY);
+			}
+			
 			optionSize.x = g2.getFontMetrics().stringWidth(
-				option.name()
+				optionName //option.name()
 			);
 			Vec2D optionPos = new Vec2D(
 				screenCenter.x - optionSize.x/2,
 				screenCenter.y + 25 + i*(optionSize.y + 25)
 			);
 
-			if (i == selectedIndex) {
-				g2.setColor(Color.WHITE);
-				g2.drawString(">", optionPos.x - 40, optionPos.y);
-			} else {
-				g2.setColor(Color.LIGHT_GRAY);
-			}
 
-			g2.drawString(option.name(), optionPos.x, optionPos.y);
+			g2.drawString(optionName, optionPos.x, optionPos.y);
 		}
     }
 }

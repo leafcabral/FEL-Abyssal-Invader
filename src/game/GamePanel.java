@@ -22,6 +22,7 @@ import java.awt.event.KeyListener;
 import java.util.Random;
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import java.time.Instant;
@@ -79,8 +80,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.resources = new ResourceManager(true);
 		this.graphics = new GraphicsManager(
 			new Vec2D(screenWidth, screenHeight),
-			resources.getImage("background.png"),
-			Color.BLACK
+			resources.getImage("background.png"), Color.BLACK,
+			resources
 		);
 		this.input = new InputManager();
 		
@@ -301,7 +302,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 		Vec2D screenVec = new Vec2D(screenWidth, screenHeight);
-
+		
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		
 		// Desenhar fundo
 		graphics.drawBackground(g2);
 
@@ -312,7 +317,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			g2.fillRect(0, 0, screenWidth, screenHeight);
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
 			
-			graphics.drawMainMenu(g2, menuSelectedOptionIndex, delta);
+			graphics.drawMainMenu(g2, menuSelectedOptionIndex);
 			return;
 		}
 		
@@ -324,17 +329,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		graphics.drawObject(g2, player);
 		
 		g2.setColor(Color.WHITE);
-		g2.setFont(new Font("Arial", Font.BOLD, 32));
+		//g2.setFont(new Font("Arial", Font.BOLD, 32));
+		g2.setFont(resources.getFont("photonico.ttf", Font.PLAIN, 32));
 		String scoreText = Integer.toString(score);
 		String bestr = Integer.toString(best);
-		String bestText = "BEST:"+bestr;
+		String bestText = "BEST: "+bestr;
 		int textWidth = g2.getFontMetrics().stringWidth(scoreText);
 		g2.drawString(scoreText, (screenWidth - textWidth) / 2, 40);
 		int bestWidth = g2.getFontMetrics().stringWidth(bestText);
 		g2.drawString(bestText, (screenWidth-bestWidth-20),40);
 		
 		g2.setColor(Color.LIGHT_GRAY);
-		g2.setFont(new Font("Arial", Font.BOLD, 12));
+		g2.setFont(resources.getFont("photonico.ttf", Font.BOLD, 16));
 		String waveText = getTime() + (" • WAVE " + Integer.toString(wave));
 		int waveTextHeight = g2.getFontMetrics().getHeight();
 		int waveTextWidth = g2.getFontMetrics().stringWidth(waveText);
@@ -450,13 +456,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	}
 
 	public String getTime() {
-		if (status != GameStatus.RUNNING) { return (waveTimeText = "00:00"); }
+		if (status != GameStatus.RUNNING) { return waveTimeText; }
 
 		long secondsTotal = (totalPauseTime > 0) ? ((System.nanoTime() -  startTime) - totalPauseTime) / 1_000_000_000 : (System.nanoTime() - startTime) / 1_000_000_000;
 		long minutes = (secondsTotal / 60) % 60;
 		long seconds = secondsTotal % 60;
 
-		waveTimeText = String.format("%02d:%02d", minutes, seconds) + " ";
+		waveTimeText = String.format("%02d:%02d", minutes, seconds);
 
 		return waveTimeText;
 	}
