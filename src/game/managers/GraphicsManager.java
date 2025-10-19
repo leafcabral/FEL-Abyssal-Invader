@@ -224,6 +224,7 @@ public class GraphicsManager {
 
 		g2.setColor(Color.WHITE);
 		g2.setFont(resources.getFont("photonico.ttf", Font.BOLD, 32));
+		g2.setFont(resources.getFont("steamwreck.ttf", Font.PLAIN, 64));
 		int titleWidth = g2.getFontMetrics().stringWidth(title);
 		g2.drawString(title, (screenSize.x - titleWidth) / 2, menuPos.y + 25);
 
@@ -280,7 +281,6 @@ public class GraphicsManager {
 		int titleWidth = g2.getFontMetrics().stringWidth("FEL");
 		g2.drawString("FEL", (screenSize.x - titleWidth) / 2, menuPos.y + 200);
 
-
 		g2.setColor(Color.WHITE);
 		g2.setFont(resources.getFont("steamwreck.ttf", Font.PLAIN, 60));
 		titleWidth = g2.getFontMetrics().stringWidth("The Space Invader");
@@ -309,5 +309,16 @@ public class GraphicsManager {
 
 			g2.drawString(optionName, optionPos.x, optionPos.y);
 		}
-    }
+	}
+	
+	public void displayHighScore(Graphics2D g2, int highScore) {
+		g2.setColor(new Color(184, 134, 11));
+		g2.setFont(resources.getFont("steamwreck.ttf", Font.ITALIC, 32));
+		
+		String text = "High Score: " + highScore;
+		int titleWidth = g2.getFontMetrics().stringWidth(text);
+		g2.drawString(text, (screenSize.x - titleWidth) / 2, 250);
+		
+		g2.setColor(Color.WHITE);
+	}
 }

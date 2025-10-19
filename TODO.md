@@ -21,8 +21,6 @@
 - Achar um jeito de colocar tempo, pontuação, wave, vidas, e armas na HUD sem ficar nojento
 - **melhorar:** Jogador vira um pouco quando se movimenta 
 - Mostar controles no menu principal e no de pause
-- Adicionar Menu Principal
-- Melhorar menu de pause e game over
 - **terminar:** Adicionar efeitos de explosão quando inimigos morrem
 - Inimigos com animação de movimento
 

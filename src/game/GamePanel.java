@@ -329,15 +329,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		graphics.drawObject(g2, player);
 		
 		g2.setColor(Color.WHITE);
-		//g2.setFont(new Font("Arial", Font.BOLD, 32));
 		g2.setFont(resources.getFont("photonico.ttf", Font.PLAIN, 32));
 		String scoreText = Integer.toString(score);
-		String bestr = Integer.toString(best);
-		String bestText = "BEST: "+bestr;
 		int textWidth = g2.getFontMetrics().stringWidth(scoreText);
 		g2.drawString(scoreText, (screenWidth - textWidth) / 2, 40);
-		int bestWidth = g2.getFontMetrics().stringWidth(bestText);
-		g2.drawString(bestText, (screenWidth-bestWidth-20),40);
 		
 		g2.setColor(Color.LIGHT_GRAY);
 		g2.setFont(resources.getFont("photonico.ttf", Font.BOLD, 16));
@@ -353,6 +348,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		// Menu de pause
 		if (status == GameStatus.PAUSED) {
 			graphics.drawPauseMenu(g2, menuSelectedOptionIndex);
+			graphics.displayHighScore(g2, best);
 		} else if (status == GameStatus.GAME_OVER) {
 			graphics.drawGameOverMenu(g2, menuSelectedOptionIndex);
 		}
