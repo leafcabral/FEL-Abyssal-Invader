@@ -5,11 +5,13 @@ import game.entities.*;
 import game.entities.Player.WeaponType;
 
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Random;
 
 /* Responsável por:
 - Dsenhar os objetos
@@ -46,6 +48,70 @@ public class GraphicsManager {
 		MenuOption.START, MenuOption.QUIT
 	};
 
+	private class Ray {
+		Vec2D head = new Vec2D();
+		float length;
+		float width;
+		float opacity;
+		float currentOpacity = 0;
+		float speed;
+		boolean isFadingIn = true;
+		 // 45º para baixo
+		private final static float ANGLE = (float)Math.PI * 0.25f;
+
+		private int section = -1;
+		
+		Ray() { randomize(); }
+
+		void randomize() {
+			
+			this.head.x = screenSize.x + 10;
+			this.head.y = screenSize.y/4 - random.nextFloat(1.5f*screenSize.y);
+			this.length = screenSize.x * 2;
+			
+			this.width = 50 + random.nextFloat(50);
+			this.opacity = 0.02f + random.nextFloat(0.07f);
+			this.speed = 50;
+			
+			this.currentOpacity = 0;
+			this.isFadingIn = true;
+		}
+
+		void update(double delta) {
+			head.y += speed * delta;
+			
+			if (isFadingIn) {
+				currentOpacity += delta*0.05f;
+				if (currentOpacity >= opacity) {
+					isFadingIn = false;
+				}
+			} else if (head.y > screenSize.y*0.7f) {
+				currentOpacity -= delta * 0.05f;
+				if (currentOpacity <= 0) {
+					randomize();
+				}
+			}
+		}
+		
+		void draw(Graphics2D g2) {
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, this.currentOpacity));
+			g2.setColor(Color.WHITE);
+			
+			float tailX = head.x - length * (float)Math.cos(ANGLE);
+			float tailY = head.y + length * (float)Math.sin(ANGLE);
+			
+			g2.setStroke(new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			g2.drawLine(
+				(int)head.x, (int)head.y,
+				(int)tailX, (int)tailY
+			);
+			
+		}
+	}
+	private final ArrayList<Ray> rays = new ArrayList<>();
+	private final Random random = new Random();
+	
+	
 	public GraphicsManager(
 			Vec2D screenSize,
 			BufferedImage backgroundImage, Color backgroundColor,
@@ -69,8 +135,11 @@ public class GraphicsManager {
 		} else {
 			this.bgTrueSize = new Vec2D(screenSize);
 		}
-		
 		this.resources = resources;
+		
+		for (int i = 0; i < 6; i++) {
+			rays.add(new Ray());
+		}
 	}
 
 	public void updateBackground(double delta) {
@@ -78,6 +147,10 @@ public class GraphicsManager {
 
 		if (backgroundOffset >= bgTrueSize.y) {
 			backgroundOffset = 0;
+		}
+		
+		for (Ray ray : rays) {
+			ray.update(delta);
 		}
 	}
 
@@ -102,6 +175,14 @@ public class GraphicsManager {
 				null
 			);
 		}
+	}
+	
+	public void drawRays(Graphics2D g2) {
+		for (Ray ray : rays) {
+			ray.draw(g2);
+		}
+		g2.setStroke(new BasicStroke(1));
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
 	}
 
 	public void drawObject(Graphics2D g2, GameObject obj) {
@@ -178,9 +259,9 @@ public class GraphicsManager {
 		
 		int posx = 10;
 		int posy = 15;
-		int sizex = 60;
+		int sizex = 45;
 		int sizey = sizex;
-		int incrementx = 57;
+		int incrementx = sizex+5;
 		
 		AlphaComposite emptyAC = AlphaComposite.getInstance(
 			AlphaComposite.SRC_OVER, 0.5f

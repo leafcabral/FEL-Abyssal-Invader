@@ -72,7 +72,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private int menuSelectedOptionIndex = 0;
 	
 	public GamePanel() {
-		this.setPreferredSize(new Dimension(screenWidth, screenHeight + 72));
+		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
 		this.setBackground(Color.BLACK);
 		this.setDoubleBuffered(true);
 		this.setFocusable(true);
@@ -81,7 +81,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.resources = new ResourceManager(true);
 		this.graphics = new GraphicsManager(
 			new Vec2D(screenWidth, screenHeight),
-			resources.getImage("background.png"), Color.BLACK,
+			resources.getImage("background-deep-ocean.png"), Color.BLACK,
 			resources
 		);
 		this.input = new InputManager();
@@ -353,6 +353,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g2.drawString(waveText, (screenWidth - waveTextWidth) / 2, 40 + waveTextHeight);
 		g2.setColor(Color.WHITE);
 		
+		graphics.drawRays(g2);
+		
 		graphics.drawWeapons(g2, screenVec, player, resources);
 		graphics.drawLifes(g2, player, resources);
 
@@ -363,7 +365,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		} else if (status == GameStatus.GAME_OVER) {
 			graphics.drawGameOverMenu(g2, menuSelectedOptionIndex);
 		}
-
+		
 		g2.dispose();
 	}
 
