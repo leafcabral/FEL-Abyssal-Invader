@@ -215,8 +215,8 @@ public class GraphicsManager {
 
 	public void drawWeapons(Graphics2D g2, Vec2D screenSize,
 			Player player, ResourceManager resources) {
-		int width = 40;
-		int height = width;
+		int width = 80;
+		int height = 40;
 		int spacing = 20;
 		int margin = 20;
 		int borderPadding = 2;
@@ -235,9 +235,9 @@ public class GraphicsManager {
 		);
 
 		String iconNames[] = {
-			"bullet-default-icon.png",
-			"bullet-shotgun-icon.png",
-			"bullet-blast-icon.png",
+			"bullet-default.png",
+			"bullet-shotgun.png",
+			"bullet-blast.png",
 		};
 		for (int i = 0; i < 3; i++) {
 			if (player.getCurrentWeapon().ordinal() == i) {

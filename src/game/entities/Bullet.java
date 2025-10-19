@@ -3,8 +3,6 @@ package game.entities;
 import game.utils.Vec2D;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public class Bullet extends GameObject{
@@ -21,7 +19,7 @@ public class Bullet extends GameObject{
 	
 	public static Bullet newDefaultBullet(Vec2D pos, BufferedImage img) {
 		return new Bullet(
-			pos, new Vec2D(30, 30),
+			pos, new Vec2D(60, 30),
 			new Vec2D(0, -1), 1000,
 			img, Color.YELLOW
 		);
@@ -37,7 +35,7 @@ public class Bullet extends GameObject{
 		
 		for (int i = 0; i < bullets.length; i++) {
 			bullets[i] = new Bullet(
-				pos, new Vec2D(30, 30),
+				pos, new Vec2D(60, 30),
 				directions[i], 1000,
 				img, Color.GREEN
 			);
@@ -48,7 +46,7 @@ public class Bullet extends GameObject{
 	
 	public static Bullet newBlastBullet(Vec2D pos, BufferedImage img) {
 		return new Bullet(
-			pos.add(-50), new Vec2D(90, 90),
+			pos.add(-50), new Vec2D(120, 90),
 			new Vec2D(0, -1), 700,
 			img, Color.BLUE
 		);

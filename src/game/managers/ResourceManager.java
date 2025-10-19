@@ -43,18 +43,22 @@ public class ResourceManager {
 		}
 	}
 	
-	private void preloadImages() {
-		List<Path> imagesFiles;
+	private List<Path> grabFilePaths(String dir) {
 		try {
-			imagesFiles = Files.walk(Paths.get(IMGS_DIR))
+			return Files.walk(Paths.get(dir))
+				.filter(path -> !path.toString().contains("_deprecated"))
 				.filter(Files::isRegularFile)
 				.collect(Collectors.toList()
 			);
 		} catch (IOException e) {
 			System.err.println("Failed to load images at " + IMGS_DIR);
 			e.printStackTrace();
-			return;
+			return null;
 		}
+	}
+	
+	private void preloadImages() {
+		List<Path> imagesFiles = grabFilePaths(IMGS_DIR);
 		
 		for (Path imagePath : imagesFiles) {
 			try {
@@ -73,17 +77,7 @@ public class ResourceManager {
 		}
 	}
 	private void preloadGifs() {
-		List<Path> gifFiles;
-		try {
-			gifFiles = Files.walk(Paths.get(GIFS_DIR))
-				.filter(Files::isRegularFile)
-				.collect(Collectors.toList()
-			);
-		} catch (IOException e) {
-			System.err.println("Failed to load gifs at " + GIFS_DIR);
-			e.printStackTrace();
-			return;
-		}
+		List<Path> gifFiles = grabFilePaths(GIFS_DIR);
 		
 		for (Path imagePath : gifFiles) {
 			String filename = imagePath.getFileName().toString();
@@ -97,17 +91,7 @@ public class ResourceManager {
 		}
 	}
 	private void preloadSounds() {
-		List<Path> soundsFiles;
-		try {
-			soundsFiles = Files.walk(Paths.get(SOUNDS_DIR))
-				.filter(Files::isRegularFile)
-				.collect(Collectors.toList()
-			);
-		} catch (IOException e) {
-			System.err.println("Failed to load sounds at " + SOUNDS_DIR);
-			e.printStackTrace();
-			return;
-		}
+		List<Path> soundsFiles = grabFilePaths(SOUNDS_DIR);
 		
 		for (Path soundPath : soundsFiles) {
 			try {
@@ -121,17 +105,7 @@ public class ResourceManager {
 	}
 
 	private void preloadFonts() {
-		List<Path> fontFiles;
-		try {
-			fontFiles = Files.walk(Paths.get(FONTS_DIR))
-				.filter(Files::isRegularFile)
-				.collect(Collectors.toList()
-			);
-		} catch (IOException e) {
-			System.err.println("Failed to load fonts at " + FONTS_DIR);
-			e.printStackTrace();
-			return;
-		}
+		List<Path> fontFiles = grabFilePaths(FONTS_DIR);
 		
 		for (Path fontPath : fontFiles) {
 			try {
