@@ -36,8 +36,6 @@ public class Enemy extends Entity {
 		);
 		this.spriteDirection = this.movementDirection;
 		super.update(delta);
-		
-		if (iFrameSeconds > 0) { iFrameSeconds -= delta; }
 	}
 	
 	public void makeIvencible(float seconds) {

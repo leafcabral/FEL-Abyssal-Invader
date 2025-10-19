@@ -37,7 +37,6 @@ public class Player extends Entity {
 		super.update(delta);
 		
 		// Atualiza temporizadores
-		if (iFrameSeconds > 0) { iFrameSeconds -= delta; }
 		for (int i = 0; i < weaponTimers.length; i++) {
 			if (weaponTimers[i] > 0) {
 				weaponTimers[i] -= delta;

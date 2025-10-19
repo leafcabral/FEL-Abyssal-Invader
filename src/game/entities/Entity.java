@@ -16,6 +16,7 @@ public abstract class Entity {
 	public int life;
 	public int maxLife;
 	public float iFrameSeconds = 0;
+	public float iFrameSecondsReverse = 0; // TODO: juntar com o outro
 	
 	public BufferedImage sprite;
 	public Rectangle spriteShape;
@@ -51,6 +52,11 @@ public abstract class Entity {
 	public void update(double delta) {
 		Vec2D velocity = getVelocity().multiply((float)delta);
 		move(velocity);
+		
+		if (iFrameSeconds > 0) {
+			iFrameSeconds -= delta;
+			iFrameSecondsReverse += delta;
+		}
 	}
 	
 	public void move(Vec2D velocity) {
@@ -69,6 +75,12 @@ public abstract class Entity {
 	public void draw(Graphics2D g2) {
 		if (sprite == null) {
 			draw_fallback(g2);
+			return;
+		}
+		
+		// ex.: 3.24 -> 2
+		int firstDecimalDigit = (int)(iFrameSecondsReverse*10) % 10;
+		if (firstDecimalDigit % 2 == 0 && isInvincible()) {
 			return;
 		}
 		
