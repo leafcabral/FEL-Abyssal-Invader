@@ -8,17 +8,15 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
-public class Enemy extends GameObject {
+public class Enemy extends Entity {
 	private MovementPattern movementPattern;
-	public int life;
 	private float iFrameSeconds = 0;
 
 	public Enemy(Vec2D pos, Vec2D size,
 	              Vec2D direction, int speed,
 	              BufferedImage sprite, Color fallback_color,
 		      int life, MovementPattern movement) {
-		super(pos, size, direction, speed, sprite, fallback_color);
-		this.life = life;
+		super(pos, size, direction, speed, sprite, fallback_color, life);
 		this.movementPattern = movement;
 	}
 	public Enemy(Vec2D pos, BufferedImage img, MovementPattern movement) {

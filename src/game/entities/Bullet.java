@@ -5,11 +5,16 @@ import game.utils.Vec2D;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
-public class Bullet extends GameObject{
+public class Bullet extends Entity{
+	// Para as balas a vida é quantos inimigos elas passam
+	public int damage;
+
 	public Bullet(Vec2D pos, Vec2D size,
 	              Vec2D direction, int speed,
-	              BufferedImage sprite, Color fallback_color) {
-		super(pos, size, direction, speed, sprite, fallback_color);
+	              BufferedImage sprite, Color fallback_color,
+		      int life, int damage) {
+		super(pos, size, direction, speed, sprite, fallback_color, life);
+		this.damage = damage;
 	}
 
 	@Override
@@ -21,7 +26,8 @@ public class Bullet extends GameObject{
 		return new Bullet(
 			pos, new Vec2D(60, 30),
 			new Vec2D(0, -1), 1000,
-			img, Color.YELLOW
+			img, Color.YELLOW,
+			1, 1
 		);
 	}
 	
@@ -37,7 +43,8 @@ public class Bullet extends GameObject{
 			bullets[i] = new Bullet(
 				pos, new Vec2D(60, 30),
 				directions[i], 1000,
-				img, Color.GREEN
+				img, Color.GREEN,
+				1, 2
 			);
 		}
 		
@@ -48,7 +55,8 @@ public class Bullet extends GameObject{
 		return new Bullet(
 			pos.add(-50), new Vec2D(120, 90),
 			new Vec2D(0, -1), 700,
-			img, Color.BLUE
+			img, Color.BLUE,
+			5, 5
 		);
 	}
 }

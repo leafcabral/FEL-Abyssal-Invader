@@ -210,7 +210,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		pos.y = -(int)dummyEnemy.spriteShape.height;
 		String imgName = "enemy-" + (random.nextInt(6) + 1) + ".png";
 
-		MovementPattern pattern = MovementPattern.newStraight(100);
+		MovementPattern pattern;
 		float movementType = random.nextFloat();
 		if (movementType <= 0.7f) {
 			pattern = MovementPattern.newStraight(100);

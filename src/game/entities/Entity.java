@@ -8,10 +8,14 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
-public abstract class GameObject {
+public abstract class Entity {
 	public Rectangle collisionShape;
 	public Vec2D movementDirection;
 	public float speed;
+
+	public int life;
+	public int maxLife;
+	public float iFrameSeconds;
 	
 	public BufferedImage sprite;
 	public Rectangle spriteShape;
@@ -20,9 +24,10 @@ public abstract class GameObject {
 	public boolean flipped = false;
 	
 	
-	public GameObject(Vec2D pos, Vec2D size,
+	public Entity(Vec2D pos, Vec2D size,
 	                  Vec2D direction, int speed,
-	                  BufferedImage sprite, Color fallback_color) {
+	                  BufferedImage sprite, Color fallback_color,
+			  int life) {
 		this.collisionShape = new Rectangle(
 			pos.toPoint(),
 			size.toDimension()
@@ -37,6 +42,9 @@ public abstract class GameObject {
 		
 		this.sprite = sprite;
 		this.fallback_color = fallback_color;
+		
+		this.life = life;
+		this.maxLife = life;
 	}
 	
 	
@@ -128,5 +136,30 @@ public abstract class GameObject {
 	}
 	public float bottom() {
 		return this.spriteShape.y + this.spriteShape.height;
+	}
+	
+	public void makeInvencible(float seconds) {
+		this.iFrameSeconds = seconds;
+	}
+
+	public boolean takeDamage() {
+		if (this.life > 1 && this.iFrameSeconds <= 0) {
+			this.life--;
+			makeInvencible(1);
+			return false;
+		} else if (this.life == 1) {
+			this.life--;
+			return true;
+		}
+
+		return false;
+	}
+
+	public void heal(int lifeToHeal) {
+		this.life += lifeToHeal;
+	}
+
+	public void resetLife() {
+		this.life = maxLife;
 	}
 }

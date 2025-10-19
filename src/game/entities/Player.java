@@ -7,27 +7,20 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage; // Importa para trabalhar com imagens.
 
 
-public class Player extends GameObject {
+public class Player extends Entity {
 	public enum WeaponType {
 		DEFAULT, SHOTGUN, BLAST
 	}
 	
-	private int life;
-	private int maxLife;
-	
 	private WeaponType currentWeapon;
-	private float weaponDelays[] = {0.8f, 3.2f, 8f};
-	private float weaponTimers[] = {0, 0, 0};
-	
-	private float iFrameSeconds = 0;
+	private final float weaponDelays[] = {0.8f, 3.2f, 8f};
+	private final float weaponTimers[] = {0, 0, 0};
 
 	public Player(Vec2D pos, Vec2D size,
 	              Vec2D direction, int speed,
 	              BufferedImage sprite, Color fallback_color,
 		      int life) {
-		super(pos, size, direction, speed, sprite, fallback_color);
-		this.life = life;
-		this.maxLife = life;
+		super(pos, size, direction, speed, sprite, fallback_color, life);
 		this.switchWeapon(WeaponType.DEFAULT);
 	}
 	public Player(Vec2D pos, BufferedImage img) {
@@ -52,10 +45,6 @@ public class Player extends GameObject {
 		}
 	};
 	
-	public void makeInvencible(float seconds) {
-		iFrameSeconds = seconds;
-	}
-	
 	public Boolean canShoot() {
 		return getWeaponTimer() <= 0;
 	}
@@ -65,35 +54,6 @@ public class Player extends GameObject {
 	}
 	public void clearShootTimer() {
 		setWeaponTimer(0);
-	}
-	
-	public int getCurrentLife() {
-		return life;
-	}
-	
-	public int getMaxLife() {
-		return maxLife;
-	}
-
-	public boolean takeDamage() {
-		if (this.life > 1 && this.iFrameSeconds <= 0) {
-			this.life--;
-			makeInvencible(1);
-			return false;
-		} else if (this.life == 1) {
-			this.life--;
-			return true;
-		}
-
-		return false;
-	}
-
-	public void heal(int lifeToHeal) {
-		this.life += lifeToHeal;
-	}
-
-	public void resetLife() {
-		this.life = 3;
 	}
 	
 	public void setWeaponTimer(float newTime) {
