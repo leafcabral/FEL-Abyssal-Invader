@@ -1,8 +1,6 @@
 package game.managers;
 
 import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
@@ -17,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.sound.sampled.LineEvent;
 
 public class ResourceManager {
 	public final String RES_DIR = "res/";
@@ -27,7 +26,7 @@ public class ResourceManager {
 	
 	private HashMap<String, BufferedImage> images;
 	private HashMap<String, ImageIcon> gifs;
-	private HashMap<String, AudioInputStream> sounds;
+	private HashMap<String, String> sounds;
 	private HashMap<String, Font> fonts;
 	
 	public ResourceManager(boolean preload) {
@@ -113,16 +112,7 @@ public class ResourceManager {
 		for (Path soundPath : soundsFiles) {
 			try {
 				String filename = soundPath.getFileName().toString();
-				AudioInputStream audioIn;
-				audioIn = AudioSystem.getAudioInputStream(
-					new File(soundPath.toString())
-				);
-            
-				if (audioIn != null) {
-					sounds.put(filename, audioIn);
-				} else {
-					System.err.println("Failed to load image: " + filename);
-				}
+				sounds.put(filename, soundPath.toString());
 			} catch (Exception e) {
 				System.err.println("Failed to load: " + soundPath);
 				e.printStackTrace();
@@ -165,20 +155,32 @@ public class ResourceManager {
 	}
 	
 	public void playSound(String key) {
-		AudioInputStream audio = sounds.get(key);
+		String soundPath = sounds.get(key);
 		
-		if (audio == null) {
+		if (soundPath == null) {
 			System.err.println("Som nao existe: " + key);
-		} else {
-			try {
-				Clip clip = AudioSystem.getClip();
-				clip.open(audio);
-				clip.start();
-			} catch (Exception e) {
-				System.err.println("Erro ao tocar: " + key);
-				e.printStackTrace();
+			return;
+		} 
+		
+		try {
+			AudioInputStream audio = AudioSystem.getAudioInputStream(new File(soundPath));
+			
+			Clip clip = AudioSystem.getClip();
+			clip.open(audio);
+			
+			clip.addLineListener(event -> {
+				if (event.getType() == LineEvent.Type.STOP) {
+					clip.close();
+					try { audio.close(); }
+					catch (IOException e) {}
+				}
+			});
+			
+			clip.start();
+		} catch (Exception e) {
+			System.err.println("Erro ao tocar: " + key);
+			e.printStackTrace();
 
-			}
 		}
 	}
 	

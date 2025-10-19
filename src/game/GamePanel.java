@@ -123,11 +123,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		gameThread.start();
 	}	
 	
-	private final Object gameStateLock = new Object();
 	@Override
 	public void run() {
 		final double TARGET_FPS = 60;
-		final double OPTIMAL_TIME = 1e9 / TARGET_FPS;
+		final double INTERVAL = 1e9 / TARGET_FPS;
 		long lastFrameTime = System.nanoTime();
 		
 		while (gameThread != null) {
@@ -137,7 +136,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			
 			update();
 			repaint();
+			long sleepTime = newSleepTime(lastFrameTime, INTERVAL);
+			
+			if (sleepTime > 0) {
+				try { Thread.sleep(sleepTime); }
+				catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}
 		}
+	}
+	
+	private long newSleepTime(long lastFrameTime, double INTERVAL) {
+		double temp = lastFrameTime - System.nanoTime() + INTERVAL;
+		return (long)(temp / 1e6);
 	}
 
 	private void handlePlayerInput() {
