@@ -42,8 +42,5 @@ java -jar "dist/FEL-SpaceInvader.jar"
 ![Shotgun e menos vida](https://github.com/leafcabral/FEL-Abyssal-Invader/blob/main/screenshots/shotgun.png?raw=true)
 ![Blast e menu de pause](https://github.com/leafcabral/FEL-Abyssal-Invader/blob/main/screenshots/paused.png?raw=true)
 
-
----
-
 ## Licença
 Este projeto está sob a Licença Pública Geral GNU (v3.0).

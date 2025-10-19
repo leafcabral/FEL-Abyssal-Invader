@@ -3,9 +3,9 @@
 ## Necessário até dia 19/10
 
 ### Jogabilidade
-**- Fazer waves seguintes terem mais tipos de inimigos**
 **- Inimigos que atira e vai de um lado pro outro**
 **- Armas com *piercing* diferentes**
+- Fazer waves seguintes terem mais tipos de inimigos
 - Waves mais longas e dificeis
 
 ### Gráficos
