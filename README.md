@@ -1,6 +1,6 @@
 # FEL: The Space Invader
 
-Recriação do jogo Space Invader, com novos recursos e estilo de GameBoy, em Java no NetBeans.
+Recriação do jogo Space Invader, com novas armas e inimigos customizados, em Java no NetBeans.
 
 ## Formalidades
 Trabalho apresentado à disciplina de Programação Orientada a Objetos II do Curso de Informática para Internet do IFES campus Serra, como requisito parcial para a avaliação
@@ -9,7 +9,7 @@ Orientador: Prof. Fernando Wencelewski Possenti
 ---
 
 ## Sobre o Projeto
-Esse projeto busca recriar o jogo Space Invaders, adicionando diversos elementos na gameplay. Os gráficos do jogo são inspirados no GameBoy original.
+Esse projeto busca recriar o jogo Space Invaders, adicionando diversos elementos na gameplay.
 
 ## Sobre Nós
 Esse projeto foi feito pelo grupo 1 do *Projeto Game* da disciplina Programação Orientada a Objetos II do Curso de Informática para Internet, módulo (semestre) 4.
@@ -17,7 +17,7 @@ Os integrantes são:
 - [Ian Caliel Matos Cabral](https://github.com/calielian)
 - Fernando Ferrari Barcelos
 - Enzo Dal Col de Almeida
-- Luigi Ridolf Del Piero
+- [Luigi Ridolf Del Piero](https://github.com/ldelp14)
 - [Rafael Cabral Lopes](https://github.com/leafcabral)
 - [Vitor Felberg Barcelos](https://github.com/vtkaxx)
 
@@ -39,7 +39,7 @@ Alternativamente, digite os seguintes comandos no seu terminal de escolha:
 ```console
 cd FEL-SpaceInvader
 ant
-java -jar "FEL-SpaceInvader.jar" 
+java -jar "dist/FEL-SpaceInvader.jar" 
 ```
 
 ---

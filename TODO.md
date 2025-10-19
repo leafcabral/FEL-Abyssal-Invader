@@ -3,7 +3,7 @@
 ## Necessário até dia 20/10
 
 ### Problemas
-- A animação de explosão dos inimigos acaba repetindo alguns frames da explosão anterior/reiniciando logo após o fim (branch feature/explosion-on-death)
+...
 
 ### Jogabilidade
 - Fazer waves seguintes terem mais tipos de inimigos
@@ -28,6 +28,5 @@
 ...
 
 ## Só se sobrar tmepo
-
 - Melhorar gráfico padrão no caso de fallback
 - Adicionar chefão após *N* waves
