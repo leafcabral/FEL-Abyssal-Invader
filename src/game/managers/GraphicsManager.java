@@ -48,6 +48,8 @@ public class GraphicsManager {
 		MenuOption.START, MenuOption.QUIT
 	};
 
+	public Color goldenColor = new Color(184, 134, 11);
+	
 	private class Ray {
 		Vec2D head = new Vec2D();
 		float width;
@@ -217,6 +219,7 @@ public class GraphicsManager {
 		int height = width;
 		int spacing = 20;
 		int margin = 20;
+		int borderPadding = 2;
 
 		int totalHeight = (height + spacing) * 3 - spacing;
 		Vec2D currentPos = new Vec2D(
@@ -224,7 +227,6 @@ public class GraphicsManager {
 			screenSize.y - totalHeight - margin
 		);
 
-		g2.setColor(Color.WHITE);
 		AlphaComposite cooldownAC = AlphaComposite.getInstance(
 			AlphaComposite.SRC_OVER, 0.3f
 		);
@@ -239,11 +241,16 @@ public class GraphicsManager {
 		};
 		for (int i = 0; i < 3; i++) {
 			if (player.getCurrentWeapon().ordinal() == i) {
+				g2.setStroke(new BasicStroke(2));
+				g2.setColor(goldenColor);
+				
 				g2.drawRect(
-					(int)currentPos.x, (int)currentPos.y,
-					width, height
+					(int)currentPos.x-borderPadding, (int)currentPos.y-borderPadding,
+					width+borderPadding, height+borderPadding
 				);
 			}
+			g2.setStroke(new BasicStroke(1));
+			g2.setColor(Color.WHITE);
 
 			g2.drawImage(
 				resources.getImage(iconNames[i]),
@@ -369,7 +376,7 @@ public class GraphicsManager {
 			screenCenter.y - menuSize.y / 2
 		);
 
-		g2.setColor(new Color(184, 134, 11));
+		g2.setColor(goldenColor);
 		g2.setFont(resources.getFont("steamwreck.ttf", Font.ITALIC, 100));
 		int titleWidth = g2.getFontMetrics().stringWidth("FEL");
 		g2.drawString("FEL", (screenSize.x - titleWidth) / 2, menuPos.y + 200);
@@ -405,7 +412,7 @@ public class GraphicsManager {
 	}
 	
 	public void displayHighScore(Graphics2D g2, int highScore) {
-		g2.setColor(new Color(184, 134, 11));
+		g2.setColor(goldenColor);
 		g2.setFont(resources.getFont("steamwreck.ttf", Font.ITALIC, 32));
 		
 		String text = "High Score: " + highScore;

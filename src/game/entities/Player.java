@@ -16,15 +16,10 @@ public class Player extends GameObject {
 	private int maxLife;
 	
 	private WeaponType currentWeapon;
-	private float weaponDelays[] = {0.5f, 1.0f, 2.0f};
+	private float weaponDelays[] = {0.8f, 3.2f, 8f};
 	private float weaponTimers[] = {0, 0, 0};
 	
 	private float iFrameSeconds = 0;
-	
-	private BufferedImage sprites[];
-	private int imgIndex = 0;
-	private final float changeSpriteDelay = 0.1f;
-	private float changeSpriteTimer = changeSpriteDelay;
 
 	public Player(Vec2D pos, Vec2D size,
 	              Vec2D direction, int speed,
@@ -35,17 +30,13 @@ public class Player extends GameObject {
 		this.maxLife = life;
 		this.switchWeapon(WeaponType.DEFAULT);
 	}
-	public Player(
-			Vec2D pos, BufferedImage img1,
-			BufferedImage img2, BufferedImage img3) {
+	public Player(Vec2D pos, BufferedImage img) {
 		this(
 			pos, new Vec2D(75, 75),
 			new Vec2D(0, 0), 500, 
-			img1, Color.GREEN,
+			img, Color.BLUE,
 			3
 		);
-		
-		this.sprites = new BufferedImage[]{img1, img2, img3};
 	}
 
 	@Override
@@ -59,25 +50,6 @@ public class Player extends GameObject {
 				weaponTimers[i] -= delta;
 			}
 		}
-		
-		// Atualiza o sprite
-		if (movementDirection.x != 0) {
-			if (changeSpriteTimer > 0) {
-				changeSpriteTimer -= delta;
-			} else {
-				if (imgIndex != sprites.length - 1) {
-					imgIndex++;
-				}
-				changeSpriteTimer = changeSpriteDelay;
-			}
-		} else {
-			changeSpriteTimer = changeSpriteDelay;
-			imgIndex = 0;
-		}
-		if (this.movementDirection.x >= 0) { flipped = false; }
-		else { flipped = true; }
-		
-		this.sprite = this.sprites[imgIndex];
 	};
 	
 	public void makeInvencible(float seconds) {

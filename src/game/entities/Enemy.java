@@ -24,7 +24,7 @@ public class Enemy extends GameObject {
 	public Enemy(Vec2D pos, BufferedImage img, MovementPattern movement) {
 		this(
 			pos, new Vec2D(75, 75),
-			new Vec2D(0, 1), 200,
+			new Vec2D(1, 0), 200,
 			img, Color.RED,
 			1, movement
 		);

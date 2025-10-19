@@ -93,9 +93,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		this.player = new Player(
 			new Vec2D(screenWidth / 2, screenHeight - 100),
-			resources.getImage("player-idle.png"),
-			resources.getImage("player-moving-1.png"),
-			resources.getImage("player-moving-2.png")
+			resources.getImage("player-idle.png")
 		);
 		this.player.moveX(-this.player.spriteShape.width / 2);
 		this.player.spriteDirection = new Vec2D(0, -1);
