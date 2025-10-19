@@ -11,7 +11,7 @@
 ### Gráficos
 - Adicionar efeitos de explosão quando inimigos morrem
 - Melhorar icones das armas
-- Jogador piscar quando toma dano
+- Jogador e inimigos piscam quando toma dano
 - Animação para Game Over
 
 ### Sons
