@@ -21,12 +21,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import java.time.Instant;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -93,7 +89,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		this.player = new Player(
 			new Vec2D(screenWidth / 2, screenHeight - 100),
-			resources.getImage("player-idle-2'.png")
+			resources.getImage("player-idle-2.png")
 		);
 		this.player.moveX(-this.player.spriteShape.width / 2);
 		this.player.spriteDirection = new Vec2D(0, -1);
@@ -176,13 +172,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				player.collisionShape.y
 			);
 			switch (player.getCurrentWeapon()) {
-				case DEFAULT:
+				case DEFAULT -> 
 					bullets.add(Bullet.newDefaultBullet(
 						bulletPos,
 						resources.getImage("bullet-default.png")
 					));
-					break;
-				case SHOTGUN:
+				case SHOTGUN ->
 					Collections.addAll(
 						bullets,
 						Bullet.newShotgunBullets(
@@ -190,13 +185,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 							resources.getImage("bullet-shotgun.png")
 						)
 					);
-					break;
-				case BLAST:
+				case BLAST ->
 					bullets.add(Bullet.newBlastBullet(
 						bulletPos,
 						resources.getImage("bullet-blast.png")
 					));
-					break;
 					
 			}
 			resources.playSound("shot.wav");
@@ -218,6 +211,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			pattern = MovementPattern.newWave(50, 1f, 2f);
 		}
 		Enemy enemy = new Enemy(pos, resources.getImage(imgName), pattern);
+		enemy.speed += wave * 0.1f;
 
 		boolean canSpawn = true;
 		for (Enemy enemyListed : enemies) {
@@ -274,29 +268,27 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		ArrayList<Bullet> bulletsToRemove = new ArrayList<>();
 		ArrayList<Enemy> enemiesToRemove = new ArrayList<>();
 		
-		for (Bullet bullet : bullets) {
-			for (Enemy enemy : enemies) {
-				if (bullet.collisionShape.intersects(enemy.collisionShape)) {
-					bulletsToRemove.add(bullet);
+		for (Bullet bullet : bullets) { for (Enemy enemy : enemies) {
+			if (enemy.collidesWith(bullet) && !enemy.isInvincible()) {
+				if (enemy.takeDamage(bullet.damage)) {
 					enemiesToRemove.add(enemy);
-					resources.playSound("explosion.wav");
-					score += 10;
-					if(best<=score){
-						best=score;
-					}
+				}
+				resources.playSound("explosion.wav");
+
+				score += 10;
+				if(best <= score){ best = score; }
+				
+				if (++bullet.enemiesPierced >= bullet.life) {
+					bulletsToRemove.add(bullet);
 					break;
 				}
 			}
-		}
+		}}
 
 		for (Enemy enemy : enemies) {
-			if (player.collisionShape.intersects(enemy.collisionShape)) {
-				if (player.takeDamage()) {
-					System.out.println("Fim de Jogo!");
+			if (player.collidesWith(enemy)) {
+				if (player.takeDamage(1)) {
 					status = GameStatus.GAME_OVER;
-				}
-				else {
-					enemiesToRemove.add(enemy);
 				}
 				resources.playSound("explosion.wav");
 			}

@@ -6,8 +6,8 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class Bullet extends Entity{
-	// Para as balas a vida é quantos inimigos elas passam
 	public int damage;
+	public int enemiesPierced = 0;
 
 	public Bullet(Vec2D pos, Vec2D size,
 	              Vec2D direction, int speed,
@@ -53,7 +53,7 @@ public class Bullet extends Entity{
 	
 	public static Bullet newBlastBullet(Vec2D pos, BufferedImage img) {
 		return new Bullet(
-			pos.add(-50), new Vec2D(120, 90),
+			pos.add(-50), new Vec2D(160, 90),
 			new Vec2D(0, -1), 700,
 			img, Color.BLUE,
 			5, 5

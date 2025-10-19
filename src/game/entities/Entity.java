@@ -15,7 +15,7 @@ public abstract class Entity {
 
 	public int life;
 	public int maxLife;
-	public float iFrameSeconds;
+	public float iFrameSeconds = 0;
 	
 	public BufferedImage sprite;
 	public Rectangle spriteShape;
@@ -138,20 +138,23 @@ public abstract class Entity {
 		return this.spriteShape.y + this.spriteShape.height;
 	}
 	
-	public void makeInvencible(float seconds) {
+	public void makeInvincible(float seconds) {
 		this.iFrameSeconds = seconds;
 	}
+	
+	public boolean isInvincible() {
+		return iFrameSeconds > 0;
+	}
 
-	public boolean takeDamage() {
-		if (this.life > 1 && this.iFrameSeconds <= 0) {
-			this.life--;
-			makeInvencible(1);
-			return false;
-		} else if (this.life == 1) {
-			this.life--;
-			return true;
+	public boolean takeDamage(int damage) {
+		if (!isInvincible()) {
+			makeInvincible(1.5f); // Trocar para iFrameDelay
+			
+			this.life -= damage;
+			if ((life) <= 0) {
+				return true;
+			}
 		}
-
 		return false;
 	}
 
@@ -161,5 +164,9 @@ public abstract class Entity {
 
 	public void resetLife() {
 		this.life = maxLife;
+	}
+	
+	public boolean collidesWith(Entity other) {
+		return this.collisionShape.intersects(other.collisionShape);
 	}
 }
