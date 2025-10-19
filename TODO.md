@@ -1,32 +1,29 @@
 # O que será adicionado
 
-## Necessário até dia 20/10
-
-### Problemas
-...
+## Necessário até dia 19/10
 
 ### Jogabilidade
 - Fazer waves seguintes terem mais tipos de inimigos
-- Fazer jogador ter aceleração
-- Inimigos com especiais:
-	- Mais rápido
-	- Mais forte
+- Inimigos que atira e vai de um lado pro outro
+- Waves mais longas e dificeis
+- Armas com *piercing* diferentes
+
+### Gráficos
+- Adicionar efeitos de explosão quando inimigos morrem
+- Melhorar icones das armas
+- Jogador piscar quando toma dano
+- Animação para Game Over
+
+### Sons
+- Colocar sons normais para mais coisas
+- Audios gravados acontecerem de vez em quando
+
+## Só se sobrar tmepo
+- Mostar controles no menu principal e no de pause
+- Adicionar chefão após *N* waves
 - Inimigos podem dropar power-ups:
 	- Tiros mais rapidos
 	- Tiros passam por alguns inimigos
 	- Dobro de tiros
 	- Escudo normal/refletor
-
-### Gráficos
-- Achar um jeito de colocar tempo, pontuação, wave, vidas, e armas na HUD sem ficar nojento
-- **melhorar:** Jogador vira um pouco quando se movimenta 
-- Mostar controles no menu principal e no de pause
-- **terminar:** Adicionar efeitos de explosão quando inimigos morrem
-- Inimigos com animação de movimento
-
-### Manutenção
-...
-
-## Só se sobrar tmepo
 - Melhorar gráfico padrão no caso de fallback
-- Adicionar chefão após *N* waves

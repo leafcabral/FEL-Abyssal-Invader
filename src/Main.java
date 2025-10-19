@@ -4,7 +4,7 @@ import game.GamePanel;
 public class Main {
 	public static void main(String[] args) {
 		// 1. Cria a janela do jogo.
-		JFrame frame = new JFrame("FEL: The Space Invader");
+		JFrame frame = new JFrame("FEL: Abyssal Invader");
 		
 		// 2. Cria o painel principal, onde o jogo será desenhado.
 		GamePanel gamePanel = new GamePanel();

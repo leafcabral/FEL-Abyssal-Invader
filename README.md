@@ -1,15 +1,7 @@
-# FEL: The Space Invader
+# FEL: Abyssal Invader
 
-Recriação do jogo Space Invader, com novas armas e inimigos customizados, em Java no NetBeans.
-
-## Formalidades
-Trabalho apresentado à disciplina de Programação Orientada a Objetos II do Curso de Informática para Internet do IFES campus Serra, como requisito parcial para a avaliação
-Orientador: Prof. Fernando Wencelewski Possenti
-
----
-
-## Sobre o Projeto
-Esse projeto busca recriar o jogo Space Invaders, adicionando diversos elementos na gameplay.
+Recriação do jogo no estilo Space Invader, feito em Java pelo NetBeans.
+Explore as profundezas do oceano, enfrentando criaturas sombrias jamais antes vistas.
 
 ## Sobre Nós
 Esse projeto foi feito pelo grupo 1 do *Projeto Game* da disciplina Programação Orientada a Objetos II do Curso de Informática para Internet, módulo (semestre) 4.
@@ -21,7 +13,9 @@ Os integrantes são:
 - [Rafael Cabral Lopes](https://github.com/leafcabral)
 - [Vitor Felberg Barcelos](https://github.com/vtkaxx)
 
----
+## Formalidades
+Trabalho apresentado à disciplina de Programação Orientada a Objetos II do Curso de Informática para Internet do IFES campus Serra, como requisito parcial para a avaliação
+Orientador: Prof. Fernando Wencelewski Possenti
 
 ## Requisitos
 ### Instalação
