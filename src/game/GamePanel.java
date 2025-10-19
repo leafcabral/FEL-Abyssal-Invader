@@ -362,6 +362,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			graphics.displayHighScore(g2, best);
 		} else if (status == GameStatus.GAME_OVER) {
 			graphics.drawGameOverMenu(g2, menuSelectedOptionIndex);
+			graphics.displayHighScore(g2, best);
 		}
 		
 		g2.dispose();

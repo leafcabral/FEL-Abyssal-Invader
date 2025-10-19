@@ -362,31 +362,24 @@ public class GraphicsManager {
 	}
         
 	public void drawMainMenu(Graphics2D g2, int selectedIndex) {
+		BufferedImage title = resources.getImage("title.png");
+		String subtitle = "Abyssal Invader";
 		MenuOption options[] = mainMenuOptions;
-
+		
+		int titleX = (int)(screenCenter.x - title.getWidth() / 2) + 10;
+		int titleY = (int)(screenCenter.y - title.getHeight() / 2) - 225;
+		g2.drawImage(title, titleX, titleY, null);
+			
 		g2.setColor(Color.WHITE);
-
-		Vec2D optionSize = new Vec2D(0, 22);
-                
-		Vec2D menuSize = new Vec2D(
-			screenSize.x, screenSize.y
-		);
-		Vec2D menuPos = new Vec2D(
-			screenCenter.x - menuSize.x / 2,
-			screenCenter.y - menuSize.y / 2
-		);
-
-		g2.setColor(goldenColor);
-		g2.setFont(resources.getFont("steamwreck.ttf", Font.ITALIC, 100));
-		int titleWidth = g2.getFontMetrics().stringWidth("FEL");
-		g2.drawString("FEL", (screenSize.x - titleWidth) / 2, menuPos.y + 200);
-
-		g2.setColor(Color.WHITE);
-		g2.setFont(resources.getFont("steamwreck.ttf", Font.PLAIN, 60));
-		titleWidth = g2.getFontMetrics().stringWidth("The Space Invader");
-		g2.drawString("The Space Invader", (screenSize.x - titleWidth) / 2, menuPos.y + 260);
-
+		g2.setFont(resources.getFont("steamwreck.ttf", Font.PLAIN, 70));
+		int subtitleWidth = g2.getFontMetrics().stringWidth(subtitle);
+		int subtitleHeight = g2.getFontMetrics().getHeight();
+		int subtitleX = titleX + (title.getWidth() - subtitleWidth) / 2 - 10;
+		int subtitleY = 2*titleY + (title.getHeight() - subtitleHeight) + 62;
+		g2.drawString(subtitle, subtitleX, subtitleY);
+		
 		g2.setFont(resources.getFont("photonico.ttf", Font.PLAIN, 40));
+		Vec2D optionSize = new Vec2D(0, 22);
 		for (int i = 0; i < options.length; i++) {
 			MenuOption option = options[i];
 
@@ -417,7 +410,7 @@ public class GraphicsManager {
 		
 		String text = "High Score: " + highScore;
 		int titleWidth = g2.getFontMetrics().stringWidth(text);
-		g2.drawString(text, (screenSize.x - titleWidth) / 2, 250);
+		g2.drawString(text, (screenSize.x - titleWidth) / 2, 300);
 		
 		g2.setColor(Color.WHITE);
 	}
