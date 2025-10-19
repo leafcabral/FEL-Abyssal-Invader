@@ -234,17 +234,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			return;
 		}
 		
+		resources.updateGifs(delta);
 		graphics.updateBackground(delta);
+		
 		handlePlayerInput();
 		
 		// Remove os que sairam da tela
 		bullets.removeIf(bullet -> {
 			bullet.update(delta);
-			return bullet.collisionShape.y < 0; 
+			return bullet.bottom() < 0; 
 		});
 		enemies.removeIf(enemy -> {
 			enemy.update(delta);
-			return enemy.collisionShape.y > screenHeight;
+			return enemy.top() > screenHeight;
 		});
 		
 		// Cria novo inimigo
@@ -274,6 +276,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 					enemiesToRemove.add(enemy);
 				}
 				resources.playSound("explosion.wav");
+				resources.startExplosion(enemy.getCenter());
 
 				score += 10;
 				if(best <= score){ best = score; }
@@ -287,10 +290,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 		for (Enemy enemy : enemies) {
 			if (player.collidesWith(enemy)) {
-				if (player.takeDamage(1)) {
-					status = GameStatus.GAME_OVER;
+				if (!player.isInvincible()) {
+					resources.startExplosion(player.getCenter());
+					if (player.takeDamage(1)) {
+						status = GameStatus.GAME_OVER;
+					}
+					resources.playSound("explosion.wav");
 				}
-				resources.playSound("explosion.wav");
 			}
 		}
 
@@ -322,19 +328,23 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			return;
 		}
 		
-		// Desenhar jogo
-		g2.setColor(Color.WHITE);
-
+		// Desenhar objetos e parte da HUD
 		graphics.drawObjects(g2, new ArrayList(bullets));
 		graphics.drawObjects(g2, new ArrayList(enemies));
 		graphics.drawObject(g2, player);
+		if (status == GameStatus.RUNNING) { resources.drawGifs(g2); }
+		graphics.drawRays(g2);
+		graphics.drawWeapons(g2, screenVec, player, resources);
+		graphics.drawLifes(g2, player, resources);
 		
+		// Desenha pontuação
 		g2.setColor(Color.WHITE);
 		g2.setFont(resources.getFont("photonico.ttf", Font.PLAIN, 32));
 		String scoreText = Integer.toString(score);
 		int textWidth = g2.getFontMetrics().stringWidth(scoreText);
 		g2.drawString(scoreText, (screenWidth - textWidth) / 2, 40);
 		
+		// Desenha tempo de jogo e wave
 		g2.setColor(Color.LIGHT_GRAY);
 		g2.setFont(resources.getFont("photonico.ttf", Font.BOLD, 16));
 		String waveText = getTime() + (" • WAVE " + Integer.toString(wave));
@@ -343,11 +353,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g2.drawString(waveText, (screenWidth - waveTextWidth) / 2, 40 + waveTextHeight);
 		g2.setColor(Color.WHITE);
 		
-		graphics.drawRays(g2);
-		
-		graphics.drawWeapons(g2, screenVec, player, resources);
-		graphics.drawLifes(g2, player, resources);
-
 		// Menu de pause
 		if (status == GameStatus.PAUSED) {
 			graphics.drawPauseMenu(g2, menuSelectedOptionIndex);
@@ -365,7 +370,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		player.collisionShape.x = screenWidth / 2 - player.collisionShape.width;
 		bullets.clear();
 		enemies.clear();
+		resources.clearAllGifs();
 		player.resetLife();
+		player.iFrameSecondsReverse = 0;
+		player.iFrameSeconds = 0;
 		startTime = System.nanoTime();
 		pauseStartedTime = 0;
 		totalPauseTime = 0;

@@ -1,6 +1,8 @@
 package game.managers;
 
+import game.utils.Vec2D;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
@@ -13,6 +15,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.sound.sampled.LineEvent;
@@ -24,22 +28,47 @@ public class ResourceManager {
 	public final String SOUNDS_DIR = RES_DIR + "sounds/";
 	public final String FONTS_DIR = RES_DIR + "fonts/";
 	
-	private HashMap<String, BufferedImage> images;
-	private HashMap<String, ImageIcon> gifs;
-	private HashMap<String, String> sounds;
-	private HashMap<String, Font> fonts;
+	private final HashMap<String, BufferedImage> images;
+	private final HashMap<String, String> sounds;
+	private final HashMap<String, Font> fonts;
+	private final HashMap<String, ImageIcon> gifs;
+	private final ArrayList<Gif> activeGifs;
+	
+	private class Gif {
+		public final ImageIcon gif;
+		public final String fileName;
+		public final int x, y;
+		public final float targetTime;
+		public float runTime = 0;
+		
+		public Gif(ImageIcon gif, String fileName, int x, int y, float targetTime) {
+			this.fileName = fileName;
+			this.gif = gif;
+			this.x = x;
+			this.y = y;
+			this.targetTime = targetTime;
+		}
+		public Gif(String fileName, Vec2D pos, float targetTime) {
+			this.fileName = fileName;
+			this.gif = gifs.get(fileName);
+			this.x = (int)pos.x;
+			this.y = (int)pos.y;
+			this.targetTime = targetTime;
+		}
+	}
 	
 	public ResourceManager(boolean preload) {
 		this.images = new HashMap<>();
-		this.gifs = new HashMap<>();
 		this.sounds = new HashMap<>();
 		this.fonts = new HashMap<>();
+		this.gifs = new HashMap<>();
+		this.activeGifs = new ArrayList<>();
 		
 		if (preload) {
 			preloadImages();
-			preloadGifs();
 			preloadSounds();
 			preloadFonts();
+			preloadGifs();
 		}
 	}
 	
@@ -76,20 +105,6 @@ public class ResourceManager {
 			}
 		}
 	}
-	private void preloadGifs() {
-		List<Path> gifFiles = grabFilePaths(GIFS_DIR);
-		
-		for (Path imagePath : gifFiles) {
-			String filename = imagePath.getFileName().toString();
-			ImageIcon gif = new ImageIcon(imagePath.toString());
-
-			if (gif != null) {
-				gifs.put(filename, gif);
-			} else {
-				System.err.println("Failed to load gif: " + filename);
-			}
-		}
-	}
 	private void preloadSounds() {
 		List<Path> soundsFiles = grabFilePaths(SOUNDS_DIR);
 		
@@ -103,7 +118,6 @@ public class ResourceManager {
 			}
 		}
 	}
-
 	private void preloadFonts() {
 		List<Path> fontFiles = grabFilePaths(FONTS_DIR);
 		
@@ -119,13 +133,28 @@ public class ResourceManager {
 			}
 		}
 	}
+	private void preloadGifs() {
+		List<Path> gifFiles = grabFilePaths(GIFS_DIR);
+		
+		for (Path imagePath : gifFiles) {
+			String filename = imagePath.getFileName().toString();
+			ImageIcon gif = new ImageIcon(imagePath.toString());
+
+			if (gif != null) {
+				gifs.put(filename, gif);
+			} else {
+				System.err.println("Failed to load gif: " + filename);
+			}
+		}
+	}
 	
 	public BufferedImage getImage(String key) {
 		return images.get(key);
 	}
 	
-	public ImageIcon getGif(String key) {
-		return gifs.get(key);
+	public Font getFont(String key, int style, float size) {
+		if (fonts.get(key) == null) { return null; }
+		else { return fonts.get(key).deriveFont(style, size); }
 	}
 	
 	public void playSound(String key) {
@@ -158,8 +187,41 @@ public class ResourceManager {
 		}
 	}
 	
-	public Font getFont(String key, int style, float size) {
-		if (fonts.get(key) == null) { return null; }
-		else { return fonts.get(key).deriveFont(style, size); }
+	public void startGif(String key, Vec2D pos, float time) {
+		ImageIcon gif = gifs.get(key);
+		if (gif == null) {
+			System.err.println("Som nao existe: " + key);
+			return;
+		} 
+		
+		pos = new Vec2D(pos);
+		pos.x -= gif.getIconWidth() / 2;
+		pos.y -= gif.getIconHeight() / 2;
+		
+		activeGifs.add(new Gif(gif, key, (int)pos.x, (int)pos.y, time));
 	}
+	public void startExplosion(Vec2D pos) { startGif("explosion.gif", pos, 0.4f);}
+	
+	public void updateGifs(double delta) {
+		Iterator<Gif> iterator = activeGifs.iterator();
+
+		while (iterator.hasNext()) {
+			Gif gif = iterator.next();
+			gif.runTime += delta;
+
+			if (gif.runTime >= gif.targetTime) {
+				iterator.remove();
+			}
+		}
+	}
+	
+	public void drawGifs(Graphics2D g2) {
+		 for (Gif gif : activeGifs) {
+			if (gif.gif != null) {
+				gif.gif.paintIcon(null, g2, gif.x, gif.y);
+			}
+		};
+	}
+	
+	public void clearAllGifs() { activeGifs.clear(); }
 }

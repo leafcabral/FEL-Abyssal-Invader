@@ -4,8 +4,6 @@ import game.entities.patterns.MovementPattern;
 import game.utils.Vec2D;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public class Enemy extends Entity {
