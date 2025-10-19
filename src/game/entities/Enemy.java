@@ -31,9 +31,9 @@ public class Enemy extends GameObject {
 	}
 
 	@Override
-	public void update(float delta) {
+	public void update(double delta) {
 		this.movementDirection = movementPattern.update(
-			delta,
+			(float)delta,
 			new Vec2D(spriteShape.x, spriteShape.y)
 		);
 		this.spriteDirection = this.movementDirection;

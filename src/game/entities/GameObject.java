@@ -40,8 +40,8 @@ public abstract class GameObject {
 	}
 	
 	
-	public void update(float delta) {
-		Vec2D velocity = getVelocity().multiply(delta);
+	public void update(double delta) {
+		Vec2D velocity = getVelocity().multiply((float)delta);
 		move(velocity);
 	}
 	

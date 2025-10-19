@@ -73,7 +73,7 @@ public class GraphicsManager {
 		this.resources = resources;
 	}
 
-	public void updateBackground(float delta) {
+	public void updateBackground(double delta) {
 		backgroundOffset += backgroundSpeed * delta;
 
 		if (backgroundOffset >= bgTrueSize.y) {

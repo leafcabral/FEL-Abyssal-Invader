@@ -49,7 +49,7 @@ public class Player extends GameObject {
 	}
 
 	@Override
-	public void update(float delta) {
+	public void update(double delta) {
 		super.update(delta);
 		
 		// Atualiza temporizadores

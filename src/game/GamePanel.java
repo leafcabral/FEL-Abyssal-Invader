@@ -41,12 +41,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private final int screenWidth = 800;
 	private final int screenHeight = 800;
 	
+	private double delta = 0;
+	
 	private GameStatus status;
-	private Instant lastFrameTime;
-	private float delta = 0;
 	private int score = 0;
 	private int best = 0;
 	private int wave = 1;
+	
 	private final float WAVE_DEFAULT_DURATION = 30f;
 	private float waveTime = WAVE_DEFAULT_DURATION;
 	private long startTime;
@@ -71,7 +72,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private int menuSelectedOptionIndex = 0;
 	
 	public GamePanel() {
-		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+		this.setPreferredSize(new Dimension(screenWidth, screenHeight + 72));
 		this.setBackground(Color.BLACK);
 		this.setDoubleBuffered(true);
 		this.setFocusable(true);
@@ -88,7 +89,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		this.random = new Random();
 		
 		this.status = GameStatus.MAIN_MENU;
-		this.lastFrameTime = Instant.now();
 		this.startTime = System.nanoTime();
 		
 		this.player = new Player(
@@ -121,20 +121,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public void startGameThread() {
 		gameThread = new Thread(this);
 		gameThread.start();
-	}
-
-	private void updateDelta() {
-		Instant current = Instant.now();
-		Duration diff = Duration.between(lastFrameTime, current);
-		this.lastFrameTime = current;
-
-		this.delta = diff.toNanos() / 1e9f;
-	}
+	}	
 	
+	private final Object gameStateLock = new Object();
 	@Override
 	public void run() {
+		final double TARGET_FPS = 60;
+		final double OPTIMAL_TIME = 1e9 / TARGET_FPS;
+		long lastFrameTime = System.nanoTime();
+		
 		while (gameThread != null) {
-			updateDelta();
+			long now = System.nanoTime();
+			this.delta = (now - lastFrameTime) / 1e9;
+			lastFrameTime = now;
+			
 			update();
 			repaint();
 		}
@@ -151,8 +151,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		player.update(delta);
 		
-		// Se apagar essa linha o programa não funciona
-		System.out.println(player.getVelocity().x);
+		// Se apagar essa linha o programa não funciona System.out.println(2);
 		
 		// Se fora, coloca pra dentro
 		if (player.right() > screenWidth) {

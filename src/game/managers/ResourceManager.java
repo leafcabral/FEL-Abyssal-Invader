@@ -149,7 +149,6 @@ public class ResourceManager {
 				Font font = Font.createFont(Font.TRUETYPE_FONT, fontPath.toFile());
 				
 				fonts.put(filename, font);
-				System.out.println(filename);
 			} catch (Exception e) {
 				System.err.println("Failed to load font at " + fontPath);
 				e.printStackTrace();
