@@ -3,20 +3,20 @@
 ## Necessário até dia 19/10
 
 ### Jogabilidade
-- Fazer waves seguintes terem mais tipos de inimigos
-- Inimigos que atira e vai de um lado pro outro
+**- Fazer waves seguintes terem mais tipos de inimigos**
+**- Inimigos que atira e vai de um lado pro outro**
+**- Armas com *piercing* diferentes**
 - Waves mais longas e dificeis
-- Armas com *piercing* diferentes
 
 ### Gráficos
-- Adicionar efeitos de explosão quando inimigos morrem
-- Melhorar icones das armas
-- Jogador e inimigos piscam quando toma dano
+**- Adicionar efeitos de explosão quando inimigos morrem**
+**- Jogador e inimigos piscam quando toma dano**
 - Animação para Game Over
 
 ### Sons
-- Colocar sons normais para mais coisas
+**- Colocar sons normais para mais coisas**
 - Audios gravados acontecerem de vez em quando
+- Música de Fundo
 
 ## Só se sobrar tmepo
 - Mostar controles no menu principal e no de pause

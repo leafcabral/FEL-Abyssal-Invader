@@ -36,6 +36,13 @@ ant
 java -jar "dist/FEL-SpaceInvader.jar" 
 ```
 
+## Capturas de Tela
+![Menu Principal](https://github.com/leafacabral/FEL-Abyssal-Invader/blob/main/main-menu.png?raw=true)
+![Inimigos](https://github.com/leafacabral/FEL-Abyssal-Invader/blob/main/game.png?raw=true)
+![Shotgun e menos vida](https://github.com/leafacabral/FEL-Abyssal-Invader/blob/main/shotgun.png?raw=true)
+![Blast e menu de pause](https://github.com/leafacabral/FEL-Abyssal-Invader/blob/main/paused.png?raw=true)
+
+
 ---
 
 ## Licença
