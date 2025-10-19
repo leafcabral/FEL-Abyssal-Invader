@@ -50,28 +50,40 @@ public class GraphicsManager {
 
 	private class Ray {
 		Vec2D head = new Vec2D();
-		float length;
 		float width;
 		float opacity;
 		float currentOpacity = 0;
 		float speed;
 		boolean isFadingIn = true;
-		 // 45º para baixo
-		private final static float ANGLE = (float)Math.PI * 0.25f;
+		
+		final float length = screenSize.x * 2;
+		final static float ANGLE = (float)Math.PI * 0.25f; // 45º para baixo
 
 		private int section = -1;
 		
 		Ray() { randomize(); }
 
 		void randomize() {
-			
-			this.head.x = screenSize.x + 10;
-			this.head.y = screenSize.y/4 - random.nextFloat(1.5f*screenSize.y);
-			this.length = screenSize.x * 2;
-			
-			this.width = 50 + random.nextFloat(50);
-			this.opacity = 0.02f + random.nextFloat(0.07f);
+			this.width = 50 + random.nextFloat(100);
+			this.opacity = 0.01f + random.nextFloat(0.04f);
 			this.speed = 50;
+			
+			while (true) {
+				this.head.x = screenSize.x + 20;
+				this.head.y = screenSize.y/4 - random.nextFloat(1.5f*screenSize.y);
+				
+				boolean collidesWithOther = false;
+				for (Ray other : rays) {
+					float distance = Math.abs(this.head.y - other.head.y);
+					float totalWidth = (this.width+other.width)/2;
+					
+					if (other != this && distance < totalWidth + 20) {
+						collidesWithOther = true;
+						break;
+					}
+				}
+				if (!collidesWithOther) { break; }
+			}
 			
 			this.currentOpacity = 0;
 			this.isFadingIn = true;
@@ -100,7 +112,7 @@ public class GraphicsManager {
 			float tailX = head.x - length * (float)Math.cos(ANGLE);
 			float tailY = head.y + length * (float)Math.sin(ANGLE);
 			
-			g2.setStroke(new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			g2.setStroke(new BasicStroke(width));
 			g2.drawLine(
 				(int)head.x, (int)head.y,
 				(int)tailX, (int)tailY
@@ -137,7 +149,7 @@ public class GraphicsManager {
 		}
 		this.resources = resources;
 		
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 4; i++) {
 			rays.add(new Ray());
 		}
 	}
