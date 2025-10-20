@@ -415,6 +415,7 @@ public class GraphicsManager {
 		int controlsInitialPosY = 650;
 		for (int i = 0; i < controls.length; i++) {
 			String current = controls[i];
+			
 			int width = g2.getFontMetrics().stringWidth(current);
 			int posx = (int)screenCenter.x - width/2;
 			int posy = controlsInitialPosY + i*32;

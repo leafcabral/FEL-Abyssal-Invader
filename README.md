@@ -19,10 +19,10 @@ Orientador: Prof. Fernando Wencelewski Possenti
 
 ## Requisitos
 ### Instalação
-- **Java Development Kit X.Y** ou superior
-- **Apache Ant X.Y** ou superior
+- **Java Development**
+- **Apache Ant**
 ### Execução
-- **Java Runtime Environment X.Y** ou superior
+- **Java Runtime Environment**
 
 ## Como instalar
 Baixe os arquivos desse repositório em formato `.zip` e extrai-os em uma pasta ou, alternativamente, baixe o último release, caso tenha (arquivo `.jar`).

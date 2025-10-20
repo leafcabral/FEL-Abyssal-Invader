@@ -43,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private int best = 0;
 	private int wave = 1;
 	
-	private final float WAVE_DEFAULT_DURATION = 10f;
+	private final float WAVE_DEFAULT_DURATION = 30f;
 	private float waveTime = WAVE_DEFAULT_DURATION;
 	private long startTime;
 	private long pauseStartedTime = 0, totalPauseTime = 0;
@@ -54,7 +54,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	
 	private final Enemy dummyEnemy;
 	private final Bullet dummyBullet;
-	
 	private final Player player;
 	private final CopyOnWriteArrayList<Enemy> enemies;
 	private final CopyOnWriteArrayList<Bullet> playerBullets;
@@ -245,7 +244,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		for (Enemy enemy : enemies) {
 			ArrayList<Bullet> enemyBullets = enemy.attackPattern.attack(
-				enemy, resources.getImage("bullet-default.png"), delta
+				enemy, resources.getImage("bullet-shotgun.png"), delta
 			);
 			enemiesBullets.addAll(enemyBullets);
 		}
@@ -408,6 +407,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		pauseStartedTime = 0;
 		totalPauseTime = 0;
 		waveTime = WAVE_DEFAULT_DURATION;
+		wave = 0;
 		status = GameStatus.RUNNING;
 	}
 
