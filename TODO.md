@@ -8,7 +8,6 @@
 - Waves mais longas e dificeis
 
 ### Gráficos
-- **Adicionar efeitos de explosão quando inimigos morrem**
 - Animação para Game Over
 
 ### Sons
@@ -17,7 +16,7 @@
 - Música de Fundo
 
 ## Só se sobrar tmepo
-- Mostar controles no menu principal e no de pause
+- **Mostar controles no menu principal e no de pause**
 - Adicionar chefão após *N* waves
 - Inimigos podem dropar power-ups:
 	- Tiros mais rapidos

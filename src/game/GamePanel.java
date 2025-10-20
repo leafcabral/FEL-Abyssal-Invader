@@ -104,7 +104,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		dummyEnemy = new Enemy(
 			new Vec2D(screenWidth, screenHeight),
 			resources.getImage("enemy-1.png"),
-			MovementPattern.newStraight(100)
+			MovementPattern.newStraight()
 		);
 		dummyBullet = Bullet.newDefaultBullet(
 			new Vec2D(screenWidth, screenHeight),
@@ -205,12 +205,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 		MovementPattern pattern;
 		float movementType = random.nextFloat();
+		float speed = 200;
 		if (movementType <= 0.7f) {
-			pattern = MovementPattern.newStraight(100);
+			pattern = MovementPattern.newStraight();
 		} else {
-			pattern = MovementPattern.newWave(50, 1f, 2f);
+			pattern = MovementPattern.newWave(1f, 3f);
 		}
 		Enemy enemy = new Enemy(pos, resources.getImage(imgName), pattern);
+		enemy.speed = speed;
 		enemy.speed += wave * 0.1f;
 
 		boolean canSpawn = true;
