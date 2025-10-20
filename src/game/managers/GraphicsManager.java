@@ -24,7 +24,7 @@ public class GraphicsManager {
 		RESUME,
 		RESTART,
 		QUIT,
-                START
+				START
 	}
 
 	private ResourceManager resources;
@@ -312,7 +312,7 @@ public class GraphicsManager {
 
 		// Altura é a mesma
 		Vec2D optionSize = new Vec2D(0, 22);
-                
+				
 		Vec2D menuSize = new Vec2D(
 			200, options.length * (optionSize.y+10) + 60
 		);
@@ -360,10 +360,17 @@ public class GraphicsManager {
 	public void drawGameOverMenu(Graphics2D g2, int selectedIndex) {
 		drawGenericMenu(g2, "Game Over", gameOverOptions, selectedIndex);
 	}
-        
+		
 	public void drawMainMenu(Graphics2D g2, int selectedIndex) {
 		BufferedImage title = resources.getImage("title.png");
 		String subtitle = "Abyssal Invader";
+		String controls[] = {
+			" ↑↓ para interagir com o menu",
+			"ENTER para confirmar opção",
+			"A/← e D/→ para se mexer",
+			"SPACE para atirar",
+			"1/2/3 para alternar entre armas"
+		};
 		MenuOption options[] = mainMenuOptions;
 		
 		int titleX = (int)(screenCenter.x - title.getWidth() / 2) + 10;
@@ -401,6 +408,18 @@ public class GraphicsManager {
 
 
 			g2.drawString(optionName, optionPos.x, optionPos.y);
+		}
+		
+		g2.setColor(Color.LIGHT_GRAY);
+		g2.setFont(resources.getFont("photonico.ttf", Font.PLAIN, 16));
+		int controlsInitialPosY = 650;
+		for (int i = 0; i < controls.length; i++) {
+			String current = controls[i];
+			int width = g2.getFontMetrics().stringWidth(current);
+			int posx = (int)screenCenter.x - width/2;
+			int posy = controlsInitialPosY + i*32;
+			
+			g2.drawString(current, posx, posy);
 		}
 	}
 	
