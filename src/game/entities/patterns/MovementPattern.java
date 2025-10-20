@@ -54,6 +54,7 @@ public abstract class MovementPattern {
 			float x;
 			if (goingRight) { x = 1; }
 			else { x = -1; }
+			float y = 0.3f;
 			
 			if (currentPos.x + guySize.x >= screenSize.x && goingRight) {
 				goingRight = false;
@@ -61,7 +62,7 @@ public abstract class MovementPattern {
 				goingRight = true;
 			}
 			
-			return new Vec2D(x, 0);
+			return new Vec2D(x, y);
 		}
 	}
 	public static MovementPattern newSideToSide(Vec2D screenSize, Vec2D guySize) {

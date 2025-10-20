@@ -9,11 +9,11 @@ import java.util.ArrayList;
 public abstract class AttackPattern {
 	public float time = 0;
 
-	public abstract ArrayList<Bullet> attack(Enemy enemy, BufferedImage bulletSprite, float delta);
+	public abstract ArrayList<Bullet> attack(Enemy enemy, BufferedImage bulletSprite, double delta);
 	
 	private static class NoAttack extends AttackPattern {
 		@Override
-		public ArrayList<Bullet> attack(Enemy enemy, BufferedImage bulletSprite, float delta) {
+		public ArrayList<Bullet> attack(Enemy enemy, BufferedImage bulletSprite, double delta) {
 			return new ArrayList<>(); 
 		}
 	}
@@ -27,10 +27,11 @@ public abstract class AttackPattern {
 		
 		public SimpleShoot(float cooldown) {
 			this.cooldown = cooldown;
+			this.timer = cooldown - 1;
 		}
 		
 		@Override
-		public ArrayList<Bullet> attack(Enemy enemy, BufferedImage img, float delta) {
+		public ArrayList<Bullet> attack(Enemy enemy, BufferedImage img, double delta) {
 			ArrayList<Bullet> bullets = new ArrayList<>();
 			
 			timer += delta;
@@ -43,8 +44,9 @@ public abstract class AttackPattern {
 				);
 				
 				Bullet bullet = Bullet.newDefaultBullet(pos, img);
-				bullet.movementDirection.y = -1;
-				bullet.spriteDirection.y = -1;
+				bullet.movementDirection.y = 1;
+				bullet.spriteDirection.y = 1;
+				bullet.speed /= 2;
 				bullets.add(bullet);
 			}
 			

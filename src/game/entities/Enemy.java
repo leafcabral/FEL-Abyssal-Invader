@@ -8,8 +8,8 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class Enemy extends Entity {
-	private MovementPattern movementPattern;
-	private AttackPattern attackPattern;
+	public MovementPattern movementPattern;
+	public AttackPattern attackPattern;
 	private EnemyType type;
 	
 	public enum EnemyType {
@@ -51,7 +51,11 @@ public class Enemy extends Entity {
 			(float)delta,
 			new Vec2D(spriteShape.x, spriteShape.y)
 		);
-		this.spriteDirection = this.movementDirection;
+		if (type == EnemyType.WAVE_NONE) {
+			this.spriteDirection = this.movementDirection;
+		} else {
+			this.spriteDirection = new Vec2D(0, 1);
+		}
 		super.update(delta);
 	}
 	
@@ -76,9 +80,9 @@ public class Enemy extends Entity {
 	private static AttackPattern getAttackPatternForType(EnemyType type) {
 		switch (type) {
 			case STRAIGHT_SHOOT:
-				return AttackPattern.newSimpleShoot(2.0f);
+				return AttackPattern.newSimpleShoot(1.2f);
 			case SIDE_SHOOT:
-				return AttackPattern.newSimpleShoot(1.5f);
+				return AttackPattern.newSimpleShoot(0.7f);
 			case STRAIGHT_NONE:
 			case WAVE_NONE:
 			default:
@@ -97,5 +101,18 @@ public class Enemy extends Entity {
 			default:
 				return 1;
 		}
+	}
+	
+	@Override
+	public boolean takeDamage(int damage) {
+		if (!isInvincible()) {
+			makeInvincible(0.5f); // Trocar para iFrameDelay
+			
+			this.life -= damage;
+			if ((life) <= 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

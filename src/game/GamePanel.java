@@ -2,13 +2,12 @@ package game;
 
 import game.entities.Bullet;
 import game.entities.Enemy;
+import game.entities.Enemy.EnemyType;
 import game.entities.Player;
 import game.managers.GraphicsManager;
 import game.managers.InputManager;
 import game.managers.ResourceManager;
 import static game.entities.Player.WeaponType.*;
-import game.entities.patterns.MovementPattern;
-
 
 import game.utils.Vec2D;
 import java.awt.AlphaComposite;
@@ -44,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private int best = 0;
 	private int wave = 1;
 	
-	private final float WAVE_DEFAULT_DURATION = 30f;
+	private final float WAVE_DEFAULT_DURATION = 10f;
 	private float waveTime = WAVE_DEFAULT_DURATION;
 	private long startTime;
 	private long pauseStartedTime = 0, totalPauseTime = 0;
@@ -58,7 +57,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	
 	private final Player player;
 	private final CopyOnWriteArrayList<Enemy> enemies;
-	private final CopyOnWriteArrayList<Bullet> bullets;
+	private final CopyOnWriteArrayList<Bullet> playerBullets;
+	private final CopyOnWriteArrayList<Bullet> enemiesBullets;
 	
 	private final ResourceManager resources;
 	private final GraphicsManager graphics;
@@ -99,12 +99,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		);
 		
 		this.enemies = new CopyOnWriteArrayList<>();
-		this.bullets = new CopyOnWriteArrayList<>();
+		this.playerBullets = new CopyOnWriteArrayList<>();
+		this.enemiesBullets = new CopyOnWriteArrayList<>();
 		
 		dummyEnemy = new Enemy(
 			new Vec2D(screenWidth, screenHeight),
 			resources.getImage("enemy-1.png"),
-			MovementPattern.newStraight()
+			EnemyType.STRAIGHT_NONE,
+			graphics.screenSize
 		);
 		dummyBullet = Bullet.newDefaultBullet(
 			new Vec2D(screenWidth, screenHeight),
@@ -173,20 +175,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			);
 			switch (player.getCurrentWeapon()) {
 				case DEFAULT -> 
-					bullets.add(Bullet.newDefaultBullet(
+					playerBullets.add(Bullet.newDefaultBullet(
 						bulletPos,
 						resources.getImage("bullet-default.png")
 					));
 				case SHOTGUN ->
 					Collections.addAll(
-						bullets,
+						playerBullets,
 						Bullet.newShotgunBullets(
 							bulletPos,
 							resources.getImage("bullet-shotgun.png")
 						)
 					);
 				case BLAST ->
-					bullets.add(Bullet.newBlastBullet(
+					playerBullets.add(Bullet.newBlastBullet(
 						bulletPos,
 						resources.getImage("bullet-blast.png")
 					));
@@ -203,17 +205,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		pos.y = -(int)dummyEnemy.spriteShape.height;
 		String imgName = "enemy-" + (random.nextInt(6) + 1) + ".png";
 
-		MovementPattern pattern;
-		float movementType = random.nextFloat();
-		float speed = 200;
-		if (movementType <= 0.7f) {
-			pattern = MovementPattern.newStraight();
-		} else {
-			pattern = MovementPattern.newWave(1f, 3f);
-		}
-		Enemy enemy = new Enemy(pos, resources.getImage(imgName), pattern);
-		enemy.speed = speed;
-		enemy.speed += wave * 0.1f;
+		EnemyType enemyType = getEnemyTypeForWave();
+		Enemy enemy = new Enemy(pos, resources.getImage(imgName), enemyType, graphics.screenSize);
+		enemy.speed = 200 + wave * 5;
 
 		boolean canSpawn = true;
 		for (Enemy enemyListed : enemies) {
@@ -226,6 +220,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		if (canSpawn) {
 			enemies.add(enemy);
 		}
+	}
+	private Enemy.EnemyType getEnemyTypeForWave() {
+		float rand = random.nextFloat();
+
+		if (wave >= 7 && rand < 0.2f) { return EnemyType.SIDE_SHOOT; }
+		else if (wave >= 5 && rand < 0.3f) { return EnemyType.STRAIGHT_SHOOT; }
+		else if (wave >= 3 && rand < 0.4f) { return EnemyType.WAVE_NONE; }
+		else { return EnemyType.STRAIGHT_NONE; }
 	}
 	
 	public void update() {
@@ -241,10 +243,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		handlePlayerInput();
 		
+		for (Enemy enemy : enemies) {
+			ArrayList<Bullet> enemyBullets = enemy.attackPattern.attack(
+				enemy, resources.getImage("bullet-default.png"), delta
+			);
+			enemiesBullets.addAll(enemyBullets);
+		}
+		    
 		// Remove os que sairam da tela
-		bullets.removeIf(bullet -> {
+		playerBullets.removeIf(bullet -> {
 			bullet.update(delta);
 			return bullet.bottom() < 0; 
+		});
+		enemiesBullets.removeIf(bullet -> {
+			bullet.update(delta);
+			return bullet.top() > screenHeight; 
 		});
 		enemies.removeIf(enemy -> {
 			enemy.update(delta);
@@ -269,10 +282,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	}
 
 	private void checkCollisions() {
-		ArrayList<Bullet> bulletsToRemove = new ArrayList<>();
+		ArrayList<Bullet> playerBulletsToRemove = new ArrayList<>();
+		ArrayList<Bullet> enemiesBulletsToRemove = new ArrayList<>();
 		ArrayList<Enemy> enemiesToRemove = new ArrayList<>();
 		
-		for (Bullet bullet : bullets) { for (Enemy enemy : enemies) {
+		for (Bullet bullet : playerBullets) { for (Enemy enemy : enemies) {
 			if (enemy.collidesWith(bullet) && !enemy.isInvincible()) {
 				if (enemy.takeDamage(bullet.damage)) {
 					enemiesToRemove.add(enemy);
@@ -284,7 +298,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				if(best <= score){ best = score; }
 				
 				if (++bullet.enemiesPierced >= bullet.life) {
-					bulletsToRemove.add(bullet);
+					playerBulletsToRemove.add(bullet);
 					break;
 				}
 			}
@@ -301,8 +315,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				}
 			}
 		}
+		for (Bullet bullet : enemiesBullets) {
+			if (player.collidesWith(bullet)) {
+				if (!player.isInvincible()) {
+					resources.startExplosion(player.getCenter());
+					if (player.takeDamage(1)) {
+						status = GameStatus.GAME_OVER;
+					}
+					resources.playSound("explosion.wav");
+					enemiesBulletsToRemove.add(bullet);
+				}
+			}
+		}
 
-		bullets.removeAll(bulletsToRemove);
+		playerBullets.removeAll(playerBulletsToRemove);
+		enemiesBullets.removeAll(enemiesBulletsToRemove);
 		enemies.removeAll(enemiesToRemove);
 	}
 
@@ -331,7 +358,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 		
 		// Desenhar objetos e parte da HUD
-		graphics.drawObjects(g2, new ArrayList(bullets));
+		graphics.drawObjects(g2, new ArrayList(playerBullets));
+		graphics.drawObjects(g2, new ArrayList(enemiesBullets));
 		graphics.drawObjects(g2, new ArrayList(enemies));
 		graphics.drawObject(g2, player);
 		if (status == GameStatus.RUNNING) { resources.drawGifs(g2); }
@@ -370,7 +398,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	private void resetGame() {
 		score = 0;
 		player.collisionShape.x = screenWidth / 2 - player.collisionShape.width;
-		bullets.clear();
+		playerBullets.clear();
 		enemies.clear();
 		resources.clearAllGifs();
 		player.resetLife();
