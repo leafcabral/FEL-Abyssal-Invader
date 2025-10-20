@@ -407,7 +407,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		pauseStartedTime = 0;
 		totalPauseTime = 0;
 		waveTime = WAVE_DEFAULT_DURATION;
-		wave = 0;
+		wave = 1;
 		status = GameStatus.RUNNING;
 	}
 
